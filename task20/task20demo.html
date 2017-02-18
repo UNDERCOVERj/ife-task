@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #main div{width: 50px;height: 50px;line-height: 50px;text-align: center;background: greenyellow;display: inline-block;margin: 0 3px;}
+        .highLight{color: red}
+    </style>
+    <script>
+        window.onload= function () {
+            var line=[];
+            var text=document.getElementsByTagName('textarea')[0];
+            var main=document.getElementById('main');
+            var lIn=document.getElementById('leftIn');
+            var rIn=document.getElementById('rightIn');
+            var lOut=document.getElementById('leftOut');
+            var rOut=document.getElementById('rightOut');
+            var checked=document.getElementById('check');
+            var txt=document.getElementById('select');
+            function addEvent(){
+                lIn.onclick=leftIn;
+                rIn.onclick=rightIn;
+                lOut.onclick=leftOut;
+                rOut.onclick=rightOut;
+                checked.onclick=check;
+            }
+            function dealInput(str){
+                var a=[];//接收输入的字符串；转换为数组;
+                a=str.split(/[^0-9A-Za-z\u4e00-\u9fa5]+/g).filter(function (e) {
+                    return e.length!=0;
+                });
+                return a;
+            }
+            function leftIn(){
+                var val=text.value.trim();
+                if(val.length==0){
+                    alert('内容为空');
+                }else{
+                    var temp=dealInput(val);
+                    for(var i=0;i<temp.length;i++){
+                        line.unshift(temp[i]);
+                    }
+                }
+                render();
+                text.value='';
+            }
+            function rightIn(){
+                var val=text.value.trim();
+                if(val.length==0){
+                    alert('内容为空');
+                }else{
+                    var temp=dealInput(val);
+                    for(var i=0;i<temp.length;i++){
+                        line.push(temp[i]);
+                    }
+                    render();
+                }
+                text.value='';
+            }
+            function leftOut(){
+                if(line.length==0){
+                    alert('已无可移除元素');
+                }else{
+                    var prompt=line.shift();
+                    alert('移除元素为:'+prompt);
+                    render();
+                }
+            }
+            function rightOut(){
+                if(line.length==0){
+                    alert('已无可移除元素');
+                }else{
+                    var prompt=line.pop();
+                    alert('移除元素为:'+prompt);
+                    render();
+                }
+            }
+            function check(){
+                render();//没点一次清除以前的highlight
+                var val=txt.value.trim();
+                for(var i=0;i<line.length;i++){
+                    if(val==line[i]){
+                        main.getElementsByTagName('div')[i].className='highLight';
+                    }
+                }
+
+            }
+            function render(){
+                var str='';
+                if(line.length!=0){
+                    str=line.map(function (e) {
+                        return '<div>'+e+'</div>';
+                    }).join('');
+                }
+                main.innerHTML=str;
+            }
+            addEvent();
+            render();
+        }
+    </script>
+</head>
+<body>
+<textarea id="inputValue"></textarea>
+<button id="leftIn">左侧入</button>
+<button id="rightIn">右侧入</button>
+<button id="leftOut">左侧出</button>
+<button id="rightOut">右侧出</button>
+<input type="text" id="select"/>
+<button id="check">查询</button>
+<div id="main"></div>
+</body>
+</html>

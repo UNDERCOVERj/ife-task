@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{padding: 0;margin: 0;position: relative;width: 100%;height: 1200px}
+        table{border-collapse: collapse;margin-top:20px;}
+        td{text-align: center;border: 1px solid black;width: 100px;padding: 5px 0;}
+        th{border: 1px solid black;padding: 5px 0;color: #fff;position: relative;z-index: 8888;top:0}
+        .up{position: absolute;width:0;height:0;border-color: transparent transparent #fff transparent;border-width: 0 5px 10px 5px ;border-style: solid;top:2px;right:5px;cursor: pointer}
+        .down{position: absolute;width:0;height:0;border-color: #fff transparent transparent transparent;border-width: 10px 5px 0 5px;border-style: solid;bottom:2px;right:5px;cursor: pointer }
+    </style>
+    <script src="jq.js"></script>
+    <script>
+        $(function () {
+            var table1 = {
+                cls:'table1',//要添加的tabel的class名字
+                data:{
+                    thead:['姓名','年龄','身高'],
+                    sortSwitch:[0,1,1],
+                    tbody:{
+                        1:['习习',52,180],
+                        2:['蛤蛤',10000,176],
+                        3:['丽媛',48,166],
+                        4:['小平',78,120],
+                        5:['高富帅',22,188],
+                        6:['续命',87,182],
+                        7:['华莱士',52,153]
+                    }
+                },
+                isSort:true,
+                isFrozen:true,
+                headColor:'#555555'//defaultColor
+            };
+            new InitTable(table1);
+            function InitTable(tableData){
+                var cloneTable=[];
+                function setTable(){
+                    var tHeadStr='',tBodyStr='',tempBodyStr='',tableStr='';
+                    cloneTable=[];//每次排序都要把备胎数组重置,因为后面是push
+                    //根据参数添加thead的字符串；
+                    for(var i=0;i<tableData.data.thead.length;i++){
+                        if(!!tableData.data.sortSwitch[i]){
+                            tHeadStr+='<th>'+tableData.data.thead[i]+'<div class="up"></div><div class="down"></th>'
+                        }else{
+                            tHeadStr+='<th>'+tableData.data.thead[i]+'</th>'
+                        }
+                    }
+                    //根据参数添加tbody的字符串；
+                    for(var key in tableData.data.tbody){
+                        cloneTable.push(tableData.data.tbody[key]);
+                        tempBodyStr=''
+                        for(var j=0;j<tableData.data.tbody[key].length;j++){
+                            tempBodyStr+='<td>'+tableData.data.tbody[key][j]+'</td>';
+                        }
+                        tempBodyStr='<tr>'+tempBodyStr+'</tr>';
+                        tBodyStr+=tempBodyStr;
+                    }
+                    tableStr='<table class='+tableData.cls+'><thead><tr>'+tHeadStr+'</tr></thead><tbody>'+tBodyStr+'</tbody></table>'//整个table的字符串;
+                    $('body').append($(tableStr));
+                    $('.'+tableData.cls).find('th').css({'backgroundColor':tableData.headColor});
+                    bindEvent();//为表格设置事件
+                }
+                function sort(e){
+                    var ev=e||window.event;
+                    var cell=ev.target.parentNode.cellIndex;
+                    var i=0;
+                    if($(ev.target).attr('class')==='up'){
+                        cloneTable.sort(function (a,b) {
+                            return a[cell]-b[cell];
+                        })
+                    }else if($(ev.target).attr('class')==='down'){
+                        cloneTable.sort(function (a,b) {
+                            return b[cell]-a[cell];
+                        })
+                    }
+                    for(var key in tableData.data.tbody ){
+                        tableData.data.tbody[key]=cloneTable[i++];
+                    }
+                    $('.'+tableData.cls).remove()
+                    setTable();
+                }
+                function bindEvent(){
+                    //下面设置事件
+                    $('.'+tableData.cls+' div').click(function (e) {
+                        sort(e);
+                    })
+                   if(tableData.isFrozen){
+                       $(window).on('scroll', function () {
+                           var table=$('.'+tableData.cls),
+                                   ofTop=table.offset().top,
+                                   scTop=$(window).scrollTop(),
+                                   trHeight=table.find('thead').height(),//thead高度
+                                   tableHeight=table.height();
+                           if(scTop>ofTop&&scTop<=ofTop+tableHeight){
+                               table.find('th').css({
+                                   top:scTop-ofTop,
+                                   borderWidth:0
+                               })
+                           }else{
+                               table.find('th').css({
+                                   top:0,
+                                   borderWidth:1
+                               })
+                           }
+                       })
+                   }
+                }
+                setTable();
+            }
+        })
+    </script>
+</head>
+<body>
+<table>
+    <thead><tr><th>11</th><th>22<div class="up"></div><div class="down"></div></th></th></tr></thead>
+    <tbody><tr><td>11</td><td>22</td></tr><tr><td>11</td><td>22</td></tr></tbody>
+</table>
+
+</body>
+</html>

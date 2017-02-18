@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        div{border:2px solid black;display: flex;flex-grow: 1;margin: 34px 24px;transition: background-color 500ms; }
+        #root{width: 80%;height: 300px}
+        .second{width: 150px;height: 180px}
+    </style>
+    <script>
+        window.onload= function () {
+            var first=document.getElementById('pre');
+            var mid=document.getElementById('mid');
+            var last=document.getElementById('last');
+            var root=document.getElementById('root');
+            var bfs=document.getElementById('bfs')
+            var a=new Main(first,mid,last,bfs,root);
+        };
+        function Main(first,mid,last,bfs,root){
+            var _this=this;
+            this.delay=1000;
+            this.line=[];
+            this.timer=null;
+            this.head=null;
+            this.EventUtil.addHandler(mid,'click', function () {
+                 _this.midSearch(root);
+            })
+            this.EventUtil.addHandler(first,'click', function () {
+                _this.firstSearch(root);
+            })
+            this.EventUtil.addHandler(last,'click', function () {
+                _this.lastSearch(root);
+            })
+            this.EventUtil.addHandler(bfs,'click', function () {
+                _this.bfs(root);
+            })
+        }
+        Main.prototype={
+            EventUtil:{
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent('on'+type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                }
+            },
+            midSearch: function (parent) {
+                var self=this;
+                this.reset();
+                (function inorder(parent) {
+                    if(parent!==null){
+                        inorder(parent.firstElementChild);
+                        self.line.push(parent);
+                        inorder(parent.lastElementChild);
+                    }
+                })(parent);
+                this.show();
+            },
+            firstSearch: function (parent) {
+                var self=this;
+                this.reset();
+                (function inorder(parent) {
+                    if(parent!==null){
+                        self.line.push(parent);
+                        inorder(parent.firstElementChild);
+                        inorder(parent.lastElementChild);
+                    }
+                })(parent);
+                this.show();
+            },
+            lastSearch: function (parent) {
+                var self=this;
+                this.reset();
+                (function inorder(parent) {
+                    if(parent!==null){
+                        inorder(parent.firstElementChild);
+                        inorder(parent.lastElementChild);
+                        self.line.push(parent);
+                    }
+                })(parent);
+                this.show();
+            },
+            bfs: function (parent) {
+                var self=this;
+                this.reset();
+                (function (parent) {
+                    var queue=[];
+                    var p=null;
+                    if(parent!==null){
+                        queue.push(parent);
+                    }
+                    while(queue.length!=0){
+                        p=queue.shift();
+                        self.line.push(p);
+                        if(p.firstElementChild){
+                            queue.push(p.firstElementChild);
+                        }
+                        if(p.lastElementChild){
+                            queue.push(p.lastElementChild);
+                        }
+                    }
+                })(parent);
+                this.show();
+            },
+            reset: function () {
+                if (this.line.length > 0) { //如果队列非空即正在遍历
+                    this.head.style.backgroundColor = "#fff";//清除残留蓝色
+                    this.line = []; //清空队列
+                    clearTimeout(this.timer); //清除定时器
+                }
+            },
+            show: function () {
+                var self=this;
+                this.head=this.line.shift();
+                if(this.head){
+                    this.head.style.backgroundColor='#cd4a48';
+                    this.timer=setTimeout(function () {
+                        self.head.style.backgroundColor='#fff';
+                        self.show();
+                    },this.delay)
+                }
+
+            }
+        }
+    </script>
+</head>
+<body>
+<button id="pre">先序遍历</button>
+<button id="mid">中序遍历</button>
+<button id="last">后序遍历</button>
+<button id="bfs">层次遍历</button>
+<div id="root">
+    <div class="first">
+        <div class="second">
+            <div></div>
+            <div></div>
+        </div>
+        <div class="second">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="first">
+        <div class="second">
+            <div></div>
+            <div></div>
+        </div>
+        <div class="second">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

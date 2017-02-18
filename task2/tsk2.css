@@ -1,0 +1,41 @@
+
+*{margin: 0;padding:0;font-size: 12px;}
+h1{font-size: 20px;font-weight:800}
+h2{font-size: 16px;}
+p, h1,h2{margin-top: 5px}
+#head{background: #333333;}
+#head .head_ul{position: absolute;right: 0px;top:20px;}
+#head .head_li{float: left;padding-right: 25px}
+#head a{text-decoration: none;color: white}
+#head a:hover{color: gray}
+#main{background: #dfdfdf;padding: 5px 20px 20px 20px ;}
+.article ,.pics,.t_table,.client{padding:20px;margin-top: 20px ;background: white;;box-shadow: 5px 5px 2px #888888}
+.article p{line-height: 20px;font-size: 12px;text-indent: 24px}
+.article span,.t_table span{display: block;margin-top: 10px}
+.article h1{color: black}
+.article ul{list-style-type: none}
+.article a{color: blue}
+.article li{margin-top: 5px}
+.pics ul{list-style-type: none;margin-left: 60px}
+.pics li{border: 1px solid black;width: 160px;text-align: center;margin-top: 15px}
+.t_table .ul_math{list-style-type: decimal;margin-left: 30px}
+.t_table li{margin-top: 5px}
+.t_table table{border-collapse:collapse;border: 1px solid grey;margin-top: 5px}
+.t_table table td{border: 1px solid grey;width: 400px;padding: 5px}
+.t_table table th{background: #333333;text-align: left;color: white;padding: 5px;border: 1px solid grey}
+.t_table table tfoot td{background: #dfdfdf}
+.client form{margin-left: 20%}
+.client .all{margin-left: 13%}
+.client p{float: left;text-align: right;width: 200px;height: 20px;line-height: 20px}
+.client h1{border-left: 2px solid gray;padding-left: 5px}
+.client input[type=text]{width: 200px;height: 20px;}
+.client input[type=password]{width: 200px;height: 20px;}
+.client .prompt{float: left;padding: 3px 0 25px 10px ;}
+.client span{display: block;margin-top: 10px;font-weight: bold;color: darkgray}
+.client .pas,.repas,.sex,.city,.interest,.describe{clear: both}
+.client .pas_{float: left;padding: 3px 10px}
+.client .rad,.sel,.check,.tex{float: left;padding: 7px 0 0px 10px;}
+.client textarea{width: 200px;height: 100px}
+.client button{display:block;clear:both;border:none; width:80%;height:50px;border-radius: 10px;text-align: center;background:#3355d0 ;font-weight: bold;color: white;}
+#foot{height: 60px;  background: black;text-align: center;color: white;margin-top: 0}
+#foot p{margin-top: 0px;padding-top: 24px}

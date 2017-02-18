@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #container{overflow: hidden;position: relative;border: 1px solid red;float: left}
+        textarea{margin: 0;padding: 0}
+        .single{float: left;}
+        .TRborder{border-top: 1px solid darkgray;border-right: 1px solid darkgray}
+        .Lborder{border-left:1px solid darkgray}
+        .Bborder{border-bottom: 1px solid darkgray}
+        .clear{clear: both}
+        .clearRight{clear:right}
+        .go{border-top: 10px solid blue;background: red;position: absolute;z-index: 10;transition: 1s all }
+        #order,#btn{clear: both; }
+        #foot{overflow: hidden;margin:20px 20px;background: darkgray;width: 329px;height: 102px;position: relative }
+        #left{width: 20px;float:left;margin-top: 2px;position: absolute}
+        #right{height: 100px;line-height: 20px;float: left;margin-left: 25px;font-size: 16px;width: 300px;display: block}
+        .leftDiv{width: 20px;height: 20px;line-height: 20px;color: #fff;background: darkgray;font-size: 16px;text-align:center}
+    </style>
+
+</head>
+<body>
+<div id="container">
+
+</div>
+<pre>
+    可输入指令序列，n代表数字，如果是0表示当前指令不会执行
+* GO
+* GO n
+* TUN LEF，TUN RIG，TUN BAC
+* TRA LEF n，TRA RIG n，TRA TOP n，TRA BOT n
+* TRA LEF，TRA RIG，TRA TOP，TRA BOT
+* MOV LEF n，MOV RIG n，MOV TOP n，MOV BOT n
+* MOV LEF，MOV RIG，MOV TOP，MOV BOT
+</pre>
+<div class="clear">
+    <button id="btn">执行</button>
+    <button id="refresh">REFRESH</button>
+</div>
+<div id="foot">
+    <div id="left"></div>
+    <textarea id="right"></textarea>
+    <div class="clear"></div>
+</div>
+<script>
+
+    function Base(contain,data,whData){
+        this.contain=contain;//父div
+        this.data=data;//存行列数
+        this.whData=whData;//存宽高
+        this.pos=null;
+        this.timer=null;
+        this.setCss();
+        this.setArea();
+        this.setAction();
+        this.refresh();
+    }
+    Base.prototype={
+        EventUtil:{
+            addHandler: function (element,type,fn) {
+                if(addEventListener){
+                    element.addEventListener(type,fn,false);
+                }else if(attachEvent){
+                    element.attachEvent('on'+type,fn);
+                }else{
+                    element['on'+type]=fn;
+                }
+            },
+            getEvent: function (event) {
+                return event?event:window.event;
+            }
+        },
+        //设置初始的div
+        setCss: function () {
+            var i,j;
+            var el=document.createDocumentFragment();
+            for(i=0;i<this.data.x;i++){
+                for(j=0;j<this.data.y;j++){
+                    var oDiv=document.createElement('div');
+                    oDiv.className='single TRborder';
+                    oDiv.style.width=this.whData.w+'px';
+                    oDiv.style.height=this.whData.h+'px';
+                    if(j===0&&i===this.data.x-1){
+                        oDiv.className+=' clear Lborder Bborder';
+                    }else if(j===0){
+                        oDiv.className+=' clear Lborder';
+                    }else if(i===this.data.x-1){
+                        oDiv.className+=' Bborder';
+                    }
+                    oDiv.i=i;
+                    oDiv.j=j;
+                    el.appendChild(oDiv);
+                }
+            }
+            this.contain.appendChild(el);
+            this.contain.style.width=this.data.x*(this.whData.w+1)+1+'px';
+            console.log(this.contain.style.width)
+            this.setPos();
+        },
+        //设置pos的一些特性
+        setPos: function () {
+            this.pos=document.createElement('div');
+            this.pos.style.width=this.whData.w+'px';
+            this.pos.style.height=this.whData.h-10+'px';
+            this.pos.className='go';
+            this.pos.x=Math.floor(Math.random()*this.data.x);
+            this.pos.y=Math.floor(Math.random()*this.data.y);
+            this.pos.turn=0;
+            this.pos.rotate=0;
+            this.contain.appendChild(this.pos);
+            this.orders=['go','']
+            this.action();
+        },
+        action: function () {
+            this.pos.style.left=this.pos.x*(this.whData.w+1)+1+'px';
+            this.pos.style.top=this.pos.y*(this.whData.h+1)+1+'px';
+        },
+        //判断方向，然后移动
+        move: function (num) {
+            var direct=this.pos.turn;
+            var temp='yes';
+            //console.log(direct);
+            if(direct===0){
+                if(!((this.pos.y-num+1)>0)){
+                    alert('超出边界')
+                    temp='';
+                } else{
+                    this.pos.y-=num;
+                }
+            }else if(direct===1){
+                if(!(((this.pos.x+num)<(this.data.x)))){
+                    alert('超出边界');
+                    temp='';
+                }else{
+                    this.pos.x+=num
+                }
+                //向右移动
+            }else if(direct===2){
+                if(!((this.pos.y+num)<(this.data.y))){
+                    alert('超出边界');
+                    temp='';
+                }else{
+                    this.pos.y+=num
+                }//向下移动
+            }else if(direct===3){
+                if(!((this.pos.x-num+1)>0)){
+                    alert('超出边界')//向左移动；
+                    temp='';
+                }else{
+                    this.pos.x-=num
+                }
+            }
+            this.action();
+            return temp;
+        },
+        //设置方向，并设置属性turn，在move时用
+        turn: function (type) {
+            if(type===1){
+                this.pos.rotate=0;
+            }else if(type===2){
+                this.pos.rotate=90;
+            }else if(type===3){
+                this.pos.rotate=180;
+            }else if(type===4){
+                this.pos.rotate=270;
+            }
+            this.pos.turn=this.pos.rotate/90;
+            this.pos.style.transform='rotate('+this.pos.rotate+'deg)'
+        },
+        //设置textarea及左边数字栏,并将textarea中的数据存入数组
+        setArea: function () {
+            var self=this;
+            var input=document.getElementById('right');
+            var left=document.getElementById('left');
+            this.EventUtil.addHandler(input,'keyup', function (event) {
+                var value=input.value;
+                var arr=value.split('\n');
+                var str='';
+                for(var i=0;i<arr.length;i++){
+                    str+='<div class=leftDiv>'+(i+1)+'</div>';
+                }
+                left.innerHTML=str;
+                if(event.keyCode===13){
+                    self.check(arr);
+                }
+                left.style.marginTop=-input.scrollTop+'px';
+            })
+            this.EventUtil.addHandler(input,'scroll', function () {
+                left.style.marginTop=-input.scrollTop+'px';
+            })
+        },
+        //检查是否合格
+        check: function (arr) {
+            arr.pop();
+            var flag='';
+            for(var i=0;i<arr.length;i++){
+                var first=arr[i].split(' ')[0].toLowerCase();
+                var second=arr[i].split(' ')[1];
+                var third=arr[i].split(' ')[2];
+                if(arr[i]!==''){
+                    if(first==='go'){
+                        if(second){
+                            var secondNum=parseInt(second);
+                            if(secondNum==second){
+                                flag='yes';
+                            }
+                        }else{
+                            flag='yes';
+                        }
+                    }else if(first==='tra'||first==='mov'){
+                        second=second.toLowerCase();
+                        switch (second){
+                            case 'to':
+                                flag='yes';
+                                break;
+                            case 'top':
+                                flag='yes';
+                                flag=this.checkthird(third);
+                                break;
+                            case 'lef':
+                                flag='yes';
+                                flag=this.checkthird(third);
+                                break;
+                            case 'rig':
+                                flag='yes';
+                                flag=this.checkthird(third);
+                                break;
+                            case 'bot':
+                                flag='yes';
+                                flag=this.checkthird(third);
+                                break;
+                            default :
+                                flag='';
+                        }
+                    }else if(first==='bru'){
+                        flag='yes';
+                    }
+                    if(flag===''){
+                        document.getElementById('left').getElementsByTagName('div')[i].style.background='red';
+                    }else{
+                        document.getElementById('left').getElementsByTagName('div')[i].style.background='darkgray';
+                    }
+                    flag=''
+                }
+            }
+        },
+        checkthird: function (third) {
+            var flag=''
+            if(third){
+                var thirdNum=parseInt(third);
+                if(thirdNum.toString()===third){
+                    flag='yes'
+                }
+            }else{
+                flag='yes';
+            }
+            return flag
+        },
+        //设置移动
+        setAction: function () {
+            var input=document.getElementById('right');
+            var btn=document.getElementById('btn');
+            var self=this;
+            this.EventUtil.addHandler(btn,'click', function () {
+                var arr=input.value.split('\n');
+                var i=0;
+                var _this=self;
+                self.timer=setInterval(function () {
+                    if(i<arr.length){
+                        if(arr[i]!==''){
+                            var item=arr[i];
+                            _this.main(item);
+                        }
+                        ++i;
+                    } else {
+                        clearInterval(_this.timer)
+                    }
+                },1000)
+            })
+        },
+        main: function (item) {
+            var flag='yes';
+            var first=item.split(' ')[0].toLowerCase();
+            var second=item.split(' ')[1];
+            var third=item.split(' ')[2];
+            //var self=this;
+            if(first==='go'){
+                if(second){
+                    var num=parseInt(second);
+                    flag=this.move(num);
+                }else{
+                    flag=this.move(1);
+                }
+            }else if(first==='tra'){
+                second=second.toLowerCase();
+                if(third){
+                    third=parseInt(third);
+                }else{
+                    third=1;
+                }
+                switch (second){
+                    case 'top':
+                        if(!((this.pos.y-third+1)>0)){
+                            alert('超出边界');
+                            flag='';
+                        }else{
+                            this.pos.y-=third
+                            this.action();
+                        }
+                        break;
+                    case 'lef':
+                        if(!((this.pos.x-third+1)>0)){
+                            alert('超出边界')
+                            flag='';
+                        }else{
+                            this.pos.x-=third
+                            this.action();
+                        }
+                        break;
+                    case 'rig':
+                        if(!((this.pos.x+third)<(this.data.x))){
+                            alert('超出边界')
+                            flag='';
+                        }else{
+                            this.pos.x+=third
+                            this.action();
+                        }
+                        break;
+                    case 'bot':
+                        if(!((this.pos.y+third)<(this.data.y))){
+                            alert('超出边界')
+                            flag='';
+                        }else{
+                            this.pos.y+=third
+                            this.action();
+                        }
+                        break;
+                }
+            }else if(first==='mov'){
+                second=second.toLowerCase();
+                if(third){
+                    third=parseInt(third);
+                }else{
+                    third=1;
+                }
+                switch (second){
+                    case 'top':
+                        this.turn(1);
+                        flag=this.move(third);
+                        break;
+                    case 'lef':
+                        this.turn(4);
+                        flag=this.move(third);
+                        break;
+                    case 'rig':
+                        this.turn(2);
+                        flag=this.move(third);
+                        break;
+                    case 'bot':
+                        this.turn(3);
+                        flag=this.move(third);
+                        break;
+                    case 'to':
+                        this.buildMove();
+                        flag='yes';
+                        break;
+                    default :
+                        flag='';
+                }
+            }else if(first==='build'||first==='bru'){
+                this.build();
+            }
+            if(flag===''){
+                clearInterval(this.timer)
+            }
+        },
+        refresh: function () {
+            this.EventUtil.addHandler(document.getElementById('refresh'),'click', function () {
+                document.getElementById('right').value='';
+                document.getElementById('left').innerHTML='';
+            })
+        },
+        build: function () {
+            var el=document.createElement('div');
+            el.className='build';
+
+        }
+    }
+
+    new Base(document.getElementById('container'),{x:10,y:10},{w:50,h:50});
+</script>
+</body>
+</html>

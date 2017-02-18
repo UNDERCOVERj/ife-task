@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0;font: 16px 微软雅黑;}
+        #main{width: 600px;}
+        span{width: 10%;height: 40px;line-height: 40px;display: inline-block;text-align: right;padding-right: 15px}
+        #input_text{border-radius: 5px;height: 40px;display: inline-block;border: 1px solid grey;width: 40%}
+        #btn{padding: 0 20px;line-height: 40px;height: 40px;background: #0099ff;display: inline-block;border: none;margin-left: 15px;border-radius: 5px;cursor: pointer}
+        #warning{display: block;margin-left: 10%;padding-left: 20px}
+    </style>
+    <script>
+        function getLength(str){
+            var len=0;
+            for(var i=0;i<str.length;i++){
+                if(str.charCodeAt(i)>=0&&str.charCodeAt(i)<=128){
+                    len++;
+                }else{
+                    len+=2;
+                }
+            }
+            return len
+        }
+        window.onload= function () {
+            var main=document.getElementById('main');
+            var span=document.getElementsByTagName('span')[0];
+            var text=document.getElementById('input_text');
+            var btn=document.getElementById('btn');
+            var warning=document.getElementById('warning');
+
+            text.onblur= function () {
+                btn.click();
+            };
+            btn.onclick= function () {
+                var len=getLength(text.value)
+                if(len>=4&&len<=16){
+                    warning.innerHTML='格式正确';
+                    text.style.border='1px solid green';
+                    warning.style.color='green'
+                }else if(len==0){
+                    warning.innerHTML='格式不能为空';
+                    text.style.border='1px solid red';
+                    warning.style.color='red'
+                }else{
+                    warning.innerHTML='字符数应为4~16位';
+                    text.style.border='1px solid red';
+                    warning.style.color='red'
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+<div id="main">
+    <span>名称</span>
+    <input type="text" id="input_text" autofocus="autofocus"/>
+    <button id="btn">验证</button>
+    <p id="warning">必填,输入4-16个字符</p>
+</div>
+</body>
+</html>

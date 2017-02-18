@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .Grid {display: flex;justify-content: space-between;align-items:center;flex-wrap: nowrap;  }
+        .Grid div{width: 150px}
+        .sec1{height: 120px;background: green;padding: 20px;}
+        .sec2{height: 100px;background: green;padding: 20px;;}
+        .sec3{height: 40px;background: green;padding: 20px;}
+        .sec4{height: 200px;background: yellow;padding: 20px;}
+        @media  all and (max-width: 640px) {
+            .Grid{flex-wrap: wrap;align-items: flex-start;}
+            .sec4{ -webkit-order: -1;
+                -ms-flex-order: -1;
+                order: -1;}
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div class="Grid">
+
+    <div class="sec1"></div>
+    <div class="sec2"></div>
+    <div class="sec3"></div>
+    <div class="sec4"></div>
+
+</div>
+</body>
+</html>

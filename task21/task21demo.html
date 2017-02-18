@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #first,#second{width: 100%;height: 300px;border: 1px solid black;}
+        #first div,#second div{width: 100px;height: 100px;line-height: 50px;text-align: center;background: greenyellow;display: inline-block;margin: 0 3px;}
+    </style>
+    <script>
+        //为解决问题，圆角逗号
+        window.onload= function () {
+            var firstDiv=document.getElementById('first');
+            var secondDiv=document.getElementById('second');
+            var btn=document.getElementById('btn');
+            var child=firstDiv.getElementsByTagName('div');
+            var first=new Box(firstDiv);
+            first.pushFirst(first.enterInput,firstDiv);
+            var second=new Box(secondDiv);
+            second.EventUtil.addHanler(btn,'click', function () {
+                return second.pushSecond(secondDiv);
+            });
+        }
+        function Box(tag){
+            this.line=[];
+            this.enterInput=document.getElementById('enter');
+            this.area=document.getElementById('area');
+            this.delete(tag);
+        }
+        Box.prototype={
+            EventUtil: {
+              addHanler: function (element,type,fn) {
+                  if(addEventListener){
+                      element.addEventListener(type,fn,false);
+                  }else if(attachEvent) {
+                      element.attachEvent('on'+type, fn);
+                  }else{
+                      element['on'+type]=fn;
+                  }
+              },
+                getEvent: function (event) {
+                    return event?event:window.event;
+                },
+                getCharCode: function (event) {
+                    if(typeof event.keyCode=='number'){
+                        return event.keyCode;
+                    }else{
+                        return event.charCode;
+                    }
+                },
+                getTarget: function (event) {
+                    return event.target?event.target:event.srcElement;
+                }
+            },
+            //处理第二个输入数据
+            dealInput:function(str){
+                var a=[];//接收输入的字符串；转换为数组;
+                a=str.split(/[^0-9A-Za-z\u4e00-\u9fa5]+/g).filter(function (e) {
+                    return e.length!=0;
+                });
+                return a;
+            },
+            //检测first的键盘事件
+            pushFirst: function (selector,div_first) {
+                var self=this;
+                this.EventUtil.addHanler(selector,'keyup', function (event) {
+                    event=self.EventUtil.getEvent(event);
+                    var code=self.EventUtil.getCharCode(event);
+                    /*
+                    if(/(,| |\，)$/.test(self.enterInput.value) ||code==13||){
+                        if(self.line.length==10){
+                            self.line.shift();
+                        }
+                        if(self.enterInput.value.trim()!=''){
+                            self.enterInput.value.replace(/(,| |\，)$/,'')
+                            self.line.push(self.enterInput.value.trim());
+                        }
+                        self.enterInput.value.replace(/(,| |\，)$/,'')
+                        self.render(div_first);
+                        if(self.enterInput.value.trim()!=''){
+                            self.enterInput.value='';
+                        }
+                    }*/
+                    if (/[,，;；、\s\n]+/.test(self.enterInput.value) || code == 13) {
+                        var data = self.enterInput.value.trim().split(/[,，;；、。.\s\n]+/),
+                                newTag = data[0];
+                        if (self.line.indexOf(newTag) === -1) {
+                            self.line.push(newTag);
+                            if (self.line.length > 10) {
+                                self.line.shift();
+                            }
+                            self.render(div_first);
+                        }
+
+                        self.enterInput.value='';
+                    }
+                })
+
+            },
+            pushSecond:function(div_second){
+                if(this.line.length==10){
+                    this.line.shift();
+                }
+                var val=this.area.value.trim();
+                if(val.length==0){
+                    alert('内容为空');
+                }else{
+                    var temp=this.dealInput(val);
+                    for(var i=0;i<temp.length;i++){
+                        this.line.push(temp[i]);
+                    }
+                }
+                this.render(div_second);
+                this.area.value='';
+            },
+            delete:function(selector){
+                var self=this;
+                this.EventUtil.addHanler(selector,'click', function (event) {//此处想了半天
+                    var e=self.EventUtil.getEvent(event);
+                    var target=self.EventUtil.getTarget(e);
+                    var child=selector.getElementsByTagName('div');
+                    for(var i=0;i<child.length;i++){
+                        if(child[i]==target){
+                            self.line.splice(i,1);//操作数组的删除方法;
+                            self.render(selector);
+                        }
+                    }
+                })
+            },
+            render:function(tag){
+                var str='';
+                if(this.line.length!=0){
+                    str=this.line.map(function (e) {
+                        return '<div>'+e+'</div>';
+                    }).join('');
+                }else{
+                    str='';
+                }
+                tag.innerHTML=str;
+            },
+        }
+    </script>
+</head>
+<body>
+<input type="text" id="enter" placeholder="tag"/>
+<div id="first"></div>
+<textarea id="area"></textarea><button id="btn">确认兴趣爱好</button>
+<div id="second"></div>
+</body>
+</html>

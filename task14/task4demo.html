@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 01</title>
+</head>
+<body>
+
+<h3>污染城市列表</h3>
+<ul id="aqi-list">
+    <!--
+        <li>第一名：福州（样例），10</li>
+          <li>第二名：福州（样例），10</li> -->
+</ul>
+
+<script type="text/javascript">
+
+    var aqiData = [
+        ["北京", 90],
+        ["上海", 50],
+        ["福州", 10],
+        ["广州", 50],
+        ["成都", 90],
+        ["西安", 100],
+            ['sss',99],
+            ['dfj',61]
+    ];
+
+    (function () {
+
+        /*
+         在注释下方编写代码
+         遍历读取aqiData中各个城市的数据
+         将空气质量指数大于60的城市显示到aqi-list的列表中
+         */
+        //方法三 用array的内置方法
+        var list=document.getElementById('aqi-list');
+        var contentStr='';
+        var math= ["一","二","三","四","五","六","七","八","九","十"];
+        aqiData.filter(function(element){return element[1]>60})
+                .sort(function (d1,d2) {
+                    return d2[1]-d1[1];
+                })
+                .forEach(function (element,index) {
+                    contentStr+='<li>第'+math[index]+'名:'+element[0]+','+element[1]+'</li>';
+                });
+        list.innerHTML=contentStr;
+       //方法二 用了多次append,并且没有考虑排序
+        /*
+
+         var list=document.getElementById('aqi-list');
+        for(var i=0;i<aqiData.length;i++){
+            if(aqiData[i][1]>60){
+                var li=document.createElement('li');
+                var text=document.createTextNode('第一名:'+aqiData[i][0]+','+aqiData[i][1]);
+                li.appendChild(text);
+                list.appendChild(li);
+            }
+        }*/
+    //方法二
+       /*
+        var list=document.getElementById('aqi-list');
+        var listData=[];
+        var i=j=m=n=0;
+        var temp=null;
+        var str='';
+       for(i;i<aqiData.length;i++){
+            if(aqiData[i][1]>60){
+                var a=[aqiData[i][0],aqiData[i][1]];
+                listData.push(a);
+            }
+        }
+        for(j;j< listData.length;j++){
+            for(m=j+1;m< listData.length;m++){
+                if(listData[j][1]<listData[m][1]){
+                    temp=listData[m];
+                    listData[m]=listData[j];
+                    listData[j]=temp;
+                }
+            }
+        }
+        for(n;n< listData.length;n++){
+            str+='<li>第'+(n+1)+'名:'+listData[n][0]+','+listData[n][1]+'</li>';
+        }
+        list.innerHTML=str;
+        */
+
+    })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0}
+        #container{width:350px;}
+        .title{height: 50px ;width: 350px;text-align: center;overflow: hidden;background: #c81b01;color: #fff;line-height: 50px}
+        .title_text{height: 50px;line-height: 50px;display: inline-block}
+        .week_span{display: inline-block;width: 50px;height: 50px;text-align: center;line-height: 50px;color:black}
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script src="jq.js"></script>
+<script>
+    $(function () {
+        function Animate(container){
+            this.$container=container;
+            this.currentDate=null;
+            this.date=new Date();
+            this.init();
+        }
+        Animate.prototype= {
+            init:function (){
+                 this.title_ele=$('<div></div>').addClass('title').appendTo(this.$container);//设置顶部的标识
+                $('<p></p>').addClass('title_text').html(2016).appendTo(this.title_ele);
+                 $('<div class="prev"></div>').html('<-').css({'float':'left','height':'50px','padding':'0 5px','lineHeight':'50px','cursor':'pointer'}).appendTo(this.title_ele);
+                 $('<div class="next"></div>').html('->').css({'float':'right','height':'50px','padding':'0 5px','lineHeight':'50px','cursor':'pointer'}).appendTo(this.title_ele);
+                var weekArr=['日', '一', '二', '三', '四', '五', '六'];
+                for(var i=0;i<weekArr.length;i++){
+                    var week_span=$('<span></span>').html(weekArr[i]).addClass('week_span').appendTo(this.$container);
+                    if(i==0||i==weekArr.length-1){
+                        week_span.css({color:'#c81b01'});//week
+                    }
+                }
+                for(var j=0;j<42;j++){
+                    $('<span></span>').addClass('week_span').appendTo(this.$container);
+                }//添加42个单元
+                this.render(this.date);//第一次渲染
+                this.clickRender();
+                this.preRender();
+                this.nextRender();
+            },
+            clickRender: function () {
+                var self=this;
+                $('span').click(function (e) {
+                    var target= e.target,//点击的目标日期
+                            dat=new Date(self.date);//点击之前日期
+                    if(target.nodeName.toLowerCase()==='span'){
+                        var target_index=$('span').index(target);
+                        if(target_index>6){
+                            dat.setDate(self.date.getDate()+target_index-$('span').index(self.currentDate));
+                            self.date=dat;
+                            self.render();
+                        }
+                    }
+                })
+            },
+            preRender: function () {
+                var self=this;
+                $('.prev').click(function () {
+                    var dat=new Date(self.date);
+                    var currentMonth=self.date.getMonth();
+                    if(--currentMonth<0){
+                        dat.setMonth(11);
+                        dat.setFullYear(dat.getFullYear()-1);
+                    }else{
+                        dat.setMonth(currentMonth);
+                    }
+                    self.date=dat;
+                    self.render();
+                })
+            },
+            nextRender: function () {
+                var self=this;
+                $('.next').click(function () {
+                    var dat=new Date(self.date);
+                    var currentMonth=self.date.getMonth();
+                    if(++currentMonth>11){
+                        dat.setMonth(0);
+                        dat.setFullYear(dat.getFullYear()+1);
+                    }else{
+                        dat.setMonth(currentMonth);
+                    }
+                    self.date=dat;
+                    self.render();
+                })
+            },
+            render: function () {
+                $('.title_text').html(this.date.getFullYear()+'年'+(this.date.getMonth()+1)+'月');
+                $('span:gt(6)').removeAttr('style');//渲染前先清除样式
+                //找到第一个日期
+                var dat=new Date(this.date);
+                dat.setDate(1);
+                dat.setDate(dat.getDate()-dat.getDay());
+                for(var i=0;i<42;i++){
+                    var single=$('span').eq(i+7);
+                    single.html(dat.getDate());
+                    if(dat.getMonth()!==this.date.getMonth()){
+                        single.css({color:'lightgray'});
+                    }else if(dat.getDate()===this.date.getDate()){
+                        this.currentDate=single;//保存当前日期
+                        single.css({color:'#fff',background:'#c81b01'});
+                    }else if(dat.getDay()===0||dat.getDay()===6){
+                        single.css({color:'#c81b01'});
+                    }else{
+                        single.css({color:'black'});
+                    }
+                    dat.setDate(dat.getDate()+1);
+                }
+
+            }
+        }
+        new Animate($('#container'));
+
+    });
+
+
+    /*
+    var date=new Date();
+    var b=new Array("星期1", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六")
+    var dat = new Date(date);
+    //dat.setDate(dat.getDate() - date.getDate() + 1);
+    //date.setDate(1)
+   // date.setDate(-3)
+    //dat.setDate(5)
+
+   dat.setDate(dat.getDate()+21)
+    console.log(dat.getMonth())
+
+    var d = new Date();
+   // document.write(d.setDate(5));
+    document.write(d.getDate()+'\n');
+    d.setMonth(10)
+    document.write(d.getDate()+'\n');
+    d.setDate(-3)
+    document.write(d.getDate()+'\n');
+    d.setDate(33)
+    document.write(d.getDate()+'\n');
+    var DatePicker = function(container) {
+        this.container = container;
+        this.date = new Date();
+        this.mainEle = null;
+        this.selectedEle = null;
+
+        this.init();
+    }
+
+
+    DatePicker.prototype = {
+        days: ['日', '一', '二', '三', '四', '五', '六'],
+
+        init: function() {
+            // 日历外框
+            this.mainEle = $('<div><div>')
+                    .css('width', '350px')
+                    .css('height', '400px')
+                    .css('border', '2px solid lightgray')
+                    .css('font-family', '微软雅黑')
+                    .appendTo(this.container);
+
+            var self = this;
+
+            // 标题
+            var p = $('<p>')
+                    .css('text-align', 'center')
+                    .css('margin', '0')
+                    .css('padding', '5px')
+                    .css('background-color', 'rgb(200,27,1)')
+                    .css('color', 'white')
+                    .appendTo(this.mainEle);
+
+            var title = $('<strong>').addClass('title').appendTo(p);
+
+            var arrLeft = $('<strong>')
+                    .html('<-')
+                    .css('float', 'left')
+                    .css('cursor', 'pointer')
+                    .appendTo(p)
+                    .click(function() {
+                        self.preMonth();
+                    });
+
+            var arrRight = $('<strong>')
+                    .html('->')
+                    .css('float', 'right')
+                    .css('cursor', 'pointer')
+                    .appendTo(p)
+                    .click(function() {
+                        self.nextMonth()
+                    });
+
+            function createEle() {
+                var ele = $('<span>')
+                        .css('text-align', 'center')
+                        .css('display', 'inline-block')
+                        .css('width', '50px')
+                        .css('height', '50px')
+                        .css('line-height', '50px');
+
+                return ele;
+            }
+
+            // 固定不变的星期
+            for (var i = 0; i < 7; i++) {
+                var el = createEle().html(this.days[i]).appendTo(this.mainEle);
+                if (i === 0 || i === 6) {
+                    el.css('color', 'rgb(200,17,1)');
+                }
+            }
+
+            // 日期部分
+            for (var i = 0; i < 42; i++) {
+                var ele = createEle()
+                        .css('cursor', 'pointer')
+                        .appendTo(this.mainEle);
+            }
+
+            this.renderByDate(this.date);
+
+            // 点选日期事件
+            var self = this;
+            this.mainEle.click(function(e) {
+                if (e.target.nodeName === 'SPAN') {
+                    var allSpan = $('span'),
+                            index = allSpan.index($(e.target)),
+                            selectedIndex = allSpan.index(self.selectedEle);
+                    var dat = new Date(self.date);
+                    dat.setDate(dat.getDate() + index - selectedIndex);
+                    self.selectDate(dat);
+                }
+            })
+        },
+
+        nextMonth: function() {
+            var dat = new Date(this.date);
+            dat.setMonth(dat.getMonth() + 1);
+            this.selectDate(dat);
+        },
+
+        preMonth: function() {
+            var dat = new Date(this.date);
+            dat.setMonth(dat.getMonth() - 1);
+            this.selectDate(dat);
+        },
+
+        getSelectedDate: function() {
+            var y = this.date.getFullYear(),
+                    m = this.date.getMonth() + 1,
+                    d = this.date.getDate();
+            return y + '年' + (m < 10 ? '0' + m : m) + '月' + (d < 10 ? '0' + d : d) + '日';
+        },
+
+        selectDate: function(date) {
+            this.selectedEle.css('background-color', '').css('color', '');
+            if (date.getMonth() === this.date.getMonth()) {
+                var allSpan = $('span'),
+                        oIndex = allSpan.index(this.selectedEle);
+                var temp = allSpan.get(oIndex + date.getDate() - this.date.getDate());
+                this.selectedEle = $(temp).css('background-color', 'rgb(200,27,1)').css('color', 'white');
+            } else {
+                this.renderByDate(date);
+            }
+
+            this.date = date;
+        },
+
+        renderByDate: function(date) {
+            $('.title').html(date.getFullYear() + '年' + (date.getMonth() + 1) + '月');
+
+            // 找到第一个日期
+            var dat = new Date(date);
+            dat.setDate(dat.getDate() - date.getDate() + 1);
+            dat.setDate(dat.getDate() - dat.getDay());
+
+            var allSpan = $('span');
+            for (var i = 0; i < 42; i++) {
+                // 获取显示日子的jq对象
+                var ele = $(allSpan.get(i + 7)).html(dat.getDate());
+
+                // 不是同月的色彩变淡
+                if (dat.getMonth() !== date.getMonth()) {
+                    ele.css('color', 'lightgray');
+                } else {
+                    // 周六日字变红
+                    if (dat.getDay() === 0 || dat.getDay() === 6) {
+                        ele.css('color', 'rgb(200,27,1)');
+                    } else {
+                        ele.css('color', '');
+                    }
+                }
+
+                // 被选中的日期背景变红
+                if (dat.getTime() === date.getTime()) {
+                    ele.css('background-color', 'rgb(200,27,1)').css('color', 'white');
+                    this.selectedEle = ele;
+                }
+
+                dat.setDate(dat.getDate() + 1);
+            }
+        }
+    };
+*/
+</script>
+</body>
+</html>

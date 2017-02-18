@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{padding: 0;margin: 0}
+        #head{width: 100%;height:1000px;position: relative}
+        #head .first{height: 50px;width: 100%;background: rgb(0,125,96)}
+        #head .first span{height:50px;line-height: 50px;font:30px "Microsoft YaHei";color: #fff ;display: inline-block;cursor: pointer;}
+        #head .first span:hover{background: rgb(10,175,96)}
+        #log{position: absolute;height: 300px;width: 300px;border: 1px solid black;top: 0;z-index: 20;background: #fff}
+        #log .top{height: 50px;overflow: hidden;background: red ;width: 300px;cursor: move}
+        .top .lef{display:block;height:50px;line-height: 50px;float: left;padding: 0 10px}
+        .top :last-child{display:block;height:50px;line-height: 50px;float: right;padding: 0 10px;cursor: pointer;}
+        .surround{z-index: 10;background: grey;opacity: 0.5;position: fixed;top:0}
+    </style>
+</head>
+<body>
+<div id="head">
+    <div class="first">
+        <span>登录</span>
+    </div>
+    <div id="log">
+        <div class="top"><p class="lef">登录</p><p class="rig">X</p></div>
+     </div>
+</div>
+<script>
+    (function () {
+        var log=document.getElementById('log');
+        log.style.display='none';
+        new Layer()
+        function Layer(){
+            var head=document.getElementById('head');
+            var first_log=document.getElementsByClassName('first')[0].getElementsByTagName('span')[0];
+            var top=log.getElementsByClassName('top')[0];
+            var close=document.getElementsByClassName('rig')[0];
+
+            var clientW=document.documentElement.clientWidth?document.documentElement.clientWidth:document.body.clientWidth;//固定窗口宽度
+            var clientH=document.documentElement.clientHeight?document.documentElement.clientHeight:document.body.clientHeight;//固定窗口高度
+            var rollTop=document.documentElement.scrollTop?document.documentElement.scrollTop:document.body.scrollTop;
+            first_log.onclick=setCover;
+            window.onscroll= function () {
+                rollAdd=document.documentElement.scrollTop?document.documentElement.scrollTop:document.body.scrollTop-rollTop;//算增加量
+                log.style.top=log.offsetTop+rollAdd+'px';
+                rollTop=document.documentElement.scrollTop?document.documentElement.scrollTop:document.body.scrollTop;
+                surround();
+            }
+            window.onresize= function () {
+                setCss();
+                surround();
+            }
+            //点击登录，显示遮罩
+            function setCover(){
+                if(log.style.display==='none'){
+                    log.style.display='block';
+                }else{
+                    log.style.display='none';
+                }
+                setCss();//设置为可见,left，top
+                logDrag();//设置拖拽
+                surround();//设置外层遮罩
+            }
+            //当初始显示时，拖拽时，滑动时出发
+            function setCss(){
+                clientW=document.documentElement.clientWidth?document.documentElement.clientWidth:document.body.clientWidth;//固定窗口宽度
+                clientH=document.documentElement.clientHeight?document.documentElement.clientHeight:document.body.clientHeight;//固定窗口高度
+                rollTop=document.documentElement.scrollTop?document.documentElement.scrollTop:document.body.scrollTop;
+                //当resize时需要重新计算
+                log.style.top=(clientH-log.offsetHeight)/2+rollTop+'px';
+                log.style.left=(clientW-log.offsetWidth)/2+'px'
+            }
+            //添加遮罩，并给遮罩设置点击事件
+            function surround(){
+                if(document.getElementsByClassName('surround').length!=0){
+                    head.removeChild(document.getElementsByClassName('surround')[0]);
+                }
+                if(log.style.display==='block'){
+                    var oDiv=document.createElement('div');
+                    oDiv.className='surround';
+                    oDiv.style.width=clientW+'px';
+                    oDiv.style.height=clientH+'px';
+                    close.onclick=oDiv.onclick= function () {
+                        log.style.display='none';
+                        head.removeChild(oDiv);
+                    }
+                    head.appendChild(oDiv);
+                }
+            }
+            function logDrag(){
+                var mouseOffsetX;//点击时距离左边框的距离
+                var mouseOffsetY;//点击时距离上边框的距离
+                var x,y;
+                var drag_flag=false;
+                top.onmousedown= function (e) {
+                    drag_flag=true;
+                    x= e.pageX;
+                    y= e.pageY;
+                    mouseOffsetX= x-log.offsetLeft;
+                    mouseOffsetY= y-log.offsetTop;
+                }
+                top.onmousemove= function (e) {
+                    if(drag_flag) {
+                        x = e.pageX;
+                        y = e.pageY;
+                        log.style.left = x - mouseOffsetX + 'px';
+                        log.style.top = y - mouseOffsetY + 'px';
+                        //以下设上下左右的极限
+                        if(parseInt(log.style.left)<0) log.style.left=0;
+                        if(parseInt(log.style.left)>(clientW-log.offsetWidth)){
+                            log.style.left=clientW-log.offsetWidth+'px';
+                        }
+                        if(parseInt(log.style.top)<rollTop){
+                            log.style.top=rollTop+'px';
+                        }
+                        if(parseInt(log.style.top)>rollTop+clientH-log.offsetHeight){
+                            log.style.top=rollTop+clientH-log.offsetHeight+'px';
+                        }
+                    }
+                }
+                top.onmouseout=top.onmouseup= function () {
+                    drag_flag=false;
+                }
+            }
+        }
+    })()
+</script>
+</body>
+</html>

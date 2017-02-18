@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #main{width: 50%;height: 200px;border: 1px solid black;display: flex;justify-content: space-between;align-items: flex-end;}
+        #main div{width: 20px;background: red;}
+    </style>
+    <script>
+
+        var EventUtil={
+            addHandler: function (element,type,fn) {
+                if(addEventListener){
+                    element.addEventListener(type,fn,false);
+                }else if(attachEvent){
+                    element.attachEvent('on'+type,fn);
+                }else{
+                    element['on'+type]=fn;
+                }
+            },
+            getEvent: function (event) {
+                return event?event:window.event;
+            }
+        };
+        EventUtil.addHandler(window,'load', function () {
+            //检测输入内容
+            var txt=document.getElementsByTagName('input')[0];
+            var btn=document.getElementsByTagName('button');
+            var div=document.getElementById('main');
+            var arr = new Array(10);
+            var arrColor=new Array(10);
+            for (var i = 0; i < arr.length; i++) {
+                arr[i] = Math.ceil(Math.random() * 90 + 10);
+                arrColor[i]=randomColor()
+            }
+            txt.value=arr[0];
+            render();
+            //排序
+            function arrBubble() {
+                var len  = arr.length, i, j = 0, delay = 200, timer,temp,x;
+                i = len - 1;
+                timer = setInterval(function() {
+                    if(i < 1) {
+                        clearInterval(timer);
+                    }
+                    if(j == i) {
+                        --i;
+                        j = 0;
+                    }
+                    if (arr[j] > arr[j+1]) {
+                        temp=arr[j];
+                        arr[j]=arr[j+1];
+                        arr[j+1]=temp;
+                        x=arrColor[j];
+                        arrColor[j]=arrColor[j+1];
+                        arrColor[j+1]=x;
+                    }
+                    render();
+                    ++j;
+                }, delay);
+            };
+           /* function arrBubble() {
+                var temp,x;
+                for(var m=0;m<arr.length;m++){
+                    for(var n=m+1;n<arr.length;n++){
+                        if(arr[m]>arr[n]){
+                            temp=arr[m];
+                            arr[m]=arr[n];
+                            arr[n]=temp;
+                            x=arrColor[m];
+                            arrColor[m]=arrColor[n];
+                            arrColor[n]=x;
+                        }
+                    }
+                }
+            }*/
+            function toMess(){
+                arr.sort(function randomsort(a, b) {
+                    return Math.random()>.5 ? -1 : 1;
+                });
+                arrColor.sort(function randomsort(a, b) {
+                    return Math.random()>.5 ? -1 : 1;
+                });
+            }
+            //渲染
+            function render() {
+                var str='';
+                for(var j=0;j<arr.length;j++){
+                    str+='<div style="height:'+arr[j]+'px;background-color:#'+arrColor[j]+'"></div>';
+                }
+                div.innerHTML=str;
+            }
+            function insert(value){
+                var x=randomColor();
+                if(value==''){
+                    alert('请输入数据')
+                }else{
+                    var num=parseInt(value);
+                    var pos=arr.length;
+                    var temp;
+                    arrBubble();
+                    for(var j=0;j<arr.length;j++){
+                        if(arr[j]>num){
+                            temp=arr[j];
+                            for(pos;pos>=j;pos--){
+                                arr[pos+1]=arr[pos];
+                                arrColor[pos+1]=arrColor[pos];
+                            }
+                            arr[j]=num;
+                            arrColor[j]=x;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            //获取随机颜色
+            function randomColor() {
+                var rand = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+                if (rand.length === 6) {
+                    return rand;
+                } else {
+                    return randomColor();
+                }
+            }
+            // 改变数组
+            function judge(name, txt) {
+                var y=randomColor();
+                switch (name) {
+                    case 'left-in':
+                        if (txt == '') {
+                            alert('内容不能为空');
+                        }else if(arr.length==60){
+                            alert('队列已满')
+                        }
+                        else {
+                            arr.unshift(txt);
+                            arrColor.unshift(y)
+                        }
+                        break;
+                    case 'right-in':
+                        if (txt == '') {
+                            alert('内容不能为空');
+                        }else if(arr.length==60){
+                            alert('队列已满')
+                        } else {
+                            arr.push(txt);
+                            arrColor.push(y)
+                        }
+                        break;
+                    case 'left-out':
+                        if (arr.length != 0) {
+                            alert(arr.shift());
+                            arrColor.shift();
+                        } else {
+                            alert('无可删除元素');
+                        }
+                        break;
+                    case 'right-out':
+                        if (arr.length != 0) {
+                            alert(arr.pop());
+                            arrColor.pop()
+                        } else {
+                            alert('无可删除元素')
+                        }
+                        break;
+                    case 'mess':
+                        toMess();
+                        break;
+                    case 'bubble':
+                        arrBubble();
+                        break;
+                    case 'insert':
+                        insert(txt);
+                        break;
+                }
+            }
+
+            function validate(str){
+                if((/^[0-9]+$/).test(str)&&parseFloat(str)>=10&&parseFloat(str)<=100){
+                    return true;
+                }else{
+                    alert('请输入10-100的数字');
+                    return false;
+                }
+            }
+            //检测输入和点击类型
+            function clickPush(){
+                for(var i=0;i<btn.length;i++){
+                    EventUtil.addHandler(txt,'keypress', function (event) {
+                        var e=EventUtil.getEvent(event)
+                        if (e && e.keyCode == 13) {
+                            e.preventDefault();
+                        }
+                    })
+                    //注意闭包
+                    EventUtil.addHandler(btn[i],'click', function (i) {
+                        return function () {
+                                var val=txt.value;
+                                if(i<2){
+                                    if(validate(val)){
+                                        judge(this.value,val);
+                                        render();
+                                        txt.value=''
+                                    }
+                                }else{
+                                    judge(this.value,val);
+                                    render();
+                                    txt.value=''
+                                }
+                        }
+
+                    }(i))
+                }
+            }
+            clickPush();
+
+        })
+    </script>
+</head>
+<body>
+<input type="text" name="inpu"/>
+<button value="left-in">左侧入</button>
+<button value="right-in">右侧入</button>
+<button value="left-out">左侧出</button>
+<button value="right-out">右侧出</button>
+<button value="mess">打乱</button>
+<button value="bubble">排序</button>
+<button value="insert">插入</button>
+<div id="main"></div>
+</body>
+</html>

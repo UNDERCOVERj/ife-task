@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #container{overflow: hidden;position: relative;border: 1px solid red;}
+        .single{float: left;}
+        .TRborder{border-top: 1px solid darkgray;border-right: 1px solid darkgray}
+        .Lborder{border-left:1px solid darkgray}
+        .Bborder{border-bottom: 1px solid darkgray}
+        .clear{clear: both}
+        .clearRight{clear:right}
+        .go{border-top: 10px solid blue;background: red;position: absolute;z-index: 10;transition: all 1s }
+    </style>
+
+</head>
+<body>
+<div id="container">
+
+</div>
+<input type="text" id="order" />
+<button id="btn">执行</button>
+<p>TRA LEF：向屏幕的左侧移动一格，方向不变<br/>
+    TRA TOP：向屏幕的上面移动一格，方向不变<br/>
+    TRA RIG：向屏幕的右侧移动一格，方向不变<br/>
+    TRA BOT：向屏幕的下面移动一格，方向不变<br/>
+    MOV LEF：方向转向屏幕左侧，并向屏幕的左侧移动一格<br/>
+    MOV TOP：方向转向屏幕上面，向屏幕的上面移动一格<br/>
+    MOV RIG：方向转向屏幕右侧，向屏幕的右侧移动一格<br/>
+    MOV BOT：方向转向屏幕下面，向屏幕的下面移动一格</p>
+<script>
+
+    function Base(contain,data,whData){
+        this.contain=contain;//父div
+        this.data=data;//存行列数
+        this.whData=whData;//存宽高
+        this.pos=null;
+        this.setCss();
+        this.launch();
+    }
+    Base.prototype={
+        EventUtil:{
+            addHandler: function (element,type,fn) {
+                if(addEventListener){
+                    element.addEventListener(type,fn,false);
+                }else if(attachEvent){
+                    element.attachEvent('on'+type,fn);
+                }else{
+                    element['on'+type]=fn;
+                }
+            },
+            getEvent: function (event) {
+                return event?event:window.event;
+            }
+        },
+        //设置初始的div
+        setCss: function () {
+            var i,j;
+            var el=document.createDocumentFragment();
+            for(i=0;i<this.data.x;i++){
+                for(j=0;j<this.data.y;j++){
+                    var oDiv=document.createElement('div');
+                    oDiv.className='single TRborder';
+                    oDiv.style.width=this.whData.w+'px';
+                    oDiv.style.height=this.whData.h+'px';
+                    if(j===0&&i===this.data.x-1){
+                        oDiv.className+=' clear Lborder Bborder';
+                    }else if(j===0){
+                        oDiv.className+=' clear Lborder';
+                    }else if(i===this.data.x-1){
+                        oDiv.className+=' Bborder';
+                    }
+                    oDiv.i=i;
+                    oDiv.j=j;
+                    el.appendChild(oDiv);
+                }
+            }
+            this.contain.appendChild(el);
+            this.setPos();
+        },
+        //设置pos的一些特性
+        setPos: function () {
+            this.pos=document.createElement('div');
+            this.pos.style.width=this.whData.w+'px';
+            this.pos.style.height=this.whData.h-10+'px';
+            this.pos.className='go';
+            this.pos.x=Math.floor(Math.random()*this.data.x);
+            this.pos.y=Math.floor(Math.random()*this.data.y);
+            this.pos.turn=0;
+            this.pos.rotate=0;
+            this.contain.appendChild(this.pos);
+            this.action();
+        },
+        action: function () {
+            this.pos.style.left=this.pos.x*(this.whData.w+1)+1+'px';
+            this.pos.style.top=this.pos.y*(this.whData.h+1)+1+'px';
+        },
+        //判断方向，然后移动
+        move: function () {
+            var direct=this.pos.turn;
+            //console.log(direct);
+            if(direct===0){
+                this.pos.y>0&&this.pos.y--;//向上移动
+            }else if(direct===1){
+                this.pos.x<(this.data.x-1)&&this.pos.x++//向右移动
+            }else if(direct===2){
+                this.pos.y<(this.data.y-1)&&this.pos.y++;//向下移动
+            }else if(direct===3){
+                this.pos.x>0&&this.pos.x--;//向左移动；
+            }
+            this.action();
+        },
+        //设置方向，并设置属性turn，在move时用
+        turn: function (type) {
+            if(type===1){
+                this.pos.rotate=0;
+            }else if(type===2){
+                this.pos.rotate=90;
+            }else if(type===3){
+                this.pos.rotate=180;
+            }else if(type===4){
+                this.pos.rotate=270;
+            }
+            this.pos.turn=this.pos.rotate/90;
+            this.pos.style.transform='rotate('+this.pos.rotate+'deg)'
+        },
+        launch: function () {
+            var self=this;
+            this.EventUtil.addHandler(document.getElementById('btn'),'click', function () {
+                var val=document.getElementById('order').value.toLowerCase();
+                if(val==='tra lef'){
+                    self.pos.x>0&&self.pos.x--;//向左移动；
+                    self.action();
+                }else if(val ==='tra top'){
+                    self.pos.y>0&&self.pos.y--;//向上移动
+                    console.log(self.pos.y)
+                    self.action();
+                }else if(val==='tra rig'){
+                    self.pos.x<(self.data.x-1)&&self.pos.x++//向右移动
+
+                    self.action();
+                }else if(val==='tra bot'){
+                    self.pos.y<(self.data.y-1)&&self.pos.y++;//向下移动
+                    self.action();
+                }else if(val==='mov lef'){
+                    self.turn(4);
+                    self.move();
+                }else if(val==='mov top'){
+                    self.turn(1);
+                    self.move();
+                }else if(val==='mov rig'){
+                    self.turn(2);
+                    self.move();
+                }else if(val==='mov bot'){
+                    self.turn(3);
+                    self.move();
+                }
+            })
+        }
+    }
+    new Base(document.getElementById('container'),{x:10,y:10},{w:50,h:50});
+</script>
+</body>
+</html>

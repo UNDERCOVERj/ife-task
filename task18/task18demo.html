@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #state div{display: inline-block;background: red;width: 50px;height: 50px;line-height: 50px;font-size: 20px;text-align: center;margin: 0 5px;}
+    </style>
+    <script>
+        window.onload= function () {
+            var form=document.forms[0];
+            var btn=form.elements['button'];
+            var txtt=form.elements['txt'];
+            var state=document.getElementById('state');
+            var EventUtil={
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent(type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                },
+                getEvent: function (event) {
+                    return event?event:window.event;
+                }
+            };
+            var arr=[];
+            //验证数据是否为数字
+            function validate(str){
+                if((/^[0-9]+$/).test(str)||str==''){
+                    return true;
+                }else{
+                    alert('请输入数字');
+                    return false;
+                }
+            }
+            function judge(name,txt){
+                switch (name){
+                    case 'left-in':
+                        if(txt==''){
+                            alert('内容不能为空');
+                        }else{
+                            arr.unshift(txt);
+                        }
+                        break;
+                    case 'right-in':
+                        if(txt==''){
+                            alert('内容不能为空');
+                        }else {
+                            arr.push(txt);
+                        }
+                        break;
+                    case 'left-out':
+                        if(arr.length!=0){
+                            arr.shift(txt);
+                        }else{
+                            alert('无可删除元素');
+                        }
+                        break;
+                    case 'right-out':
+                        if(arr.length!=0){
+                            arr.pop(txt);
+                        }else{
+                            alert('无可删除元素')
+                        }
+                        break;
+                }
+            }
+            //渲染数据
+            function render(){
+                var str='';
+                for(var i=0;i<arr.length;i++){
+                    str+='<div>'+arr[i]+'</div>';
+                }
+                state.innerHTML=str;
+            }
+            function clickPush(){
+                for(var i=0;i<btn.length;i++){
+                    EventUtil.addHandler(txtt,'keypress', function (event) {
+                        var e=EventUtil.getEvent(event)
+                        if (e && e.keyCode == 13) {
+                            e.preventDefault();
+                        }
+                    })
+                    EventUtil.addHandler(btn[i],'click', function (event) {
+                        var val=txtt.value;
+                        if(validate(val)){
+                            judge(this.value,val);
+                            render();
+                            txtt.value='';
+                        }
+                        EventUtil.getEvent(event).preventDefault();
+
+                    })
+
+
+                }
+            }
+            clickPush();
+        }
+
+    </script>
+</head>
+<body>
+<form>
+    <input type="text" name="txt"/>
+    <button name="button" value="left-in">左侧入</button>
+    <button name="button" value="right-in">右侧入</button>
+    <button name="button" value="left-out">左侧出</button>
+    <button name="button" value="right-out">右侧出</button>
+</form>
+<div id="state"></div>
+</body>
+</html>

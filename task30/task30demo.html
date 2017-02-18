@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        div{width: 600px;}
+        span{width: 30%;height: 40px;line-height: 40px;display: inline-block;text-align: right;padding-right: 15px}
+        input{border-radius: 5px;height: 40px;display: inline-block;border: 1px solid grey;width: 40%}
+        p{display: block;margin-left: 30%;padding-left: 20px}
+        button{width: 600px;height: 30px;line-height: 30px;border: none;background: #0099ff;border-radius: 10px;cursor: pointer}
+    </style>
+    <script>
+        window.onload=function(){
+            var name_warn=document.getElementById('name_warn');
+            var psd_warn=document.getElementById('psd_warn');
+            var repsd_warn=document.getElementById('repsd_warn');
+            var e_mail_warn=document.getElementById('e_mail_warn');
+            var tel_warn=document.getElementById('tel_warn');
+            var name=document.getElementById('name');
+            var psd=document.getElementById('psd');
+            var repsd=document.getElementById('repsd');
+            var e_mail=document.getElementById('e_mail');
+            var tel=document.getElementById('tel');
+            name.onblur= function () {
+                if(/^[a-zA-Z0-9_]{4,16}$/.test(name.value)){
+                    name.style.border='1px solid green';
+                    name_warn.style.color='green';
+                    name_warn.innerHTML='格式正确';
+                    name.dataset.flag=true;
+                }else{
+                    name.style.border='1px solid red';
+                    name_warn.style.color='red';
+                    name_warn.innerHTML='格式有误'
+                    name.dataset.flag='';
+                }
+            };
+            psd.onblur= function () {
+                if(/^\S{4,16}$/.test(psd.value)){
+                    psd.style.border='1px solid green';
+                    psd_warn.style.color='green';
+                    psd_warn.innerHTML='格式正确'
+                    psd.dataset.flag=true;
+                }else if(psd.value.length==0){
+                    psd.style.border='1px solid red';
+                    psd_warn.style.color='red'
+                    psd_warn.innerHTML='长度不能为0'
+                    psd.dataset.flag='';
+                }else{
+                    psd.style.border='1px solid red';
+                    psd_warn.style.color='red'
+                    psd_warn.innerHTML='格式有误'
+                    psd.dataset.flag='';
+                }
+            };
+            repsd.onblur= function () {
+                if(repsd.value.length===0){
+                    repsd.style.border='1px solid red';
+                    repsd_warn.style.color='red'
+                    repsd_warn.innerHTML='长度不能为零'
+                    repsd.dataset.flag='';
+                }else if(repsd.value===psd.value){
+                    repsd.style.border='1px solid green';
+                    repsd_warn.style.color='green';
+                    repsd_warn.innerHTML='密码输入一致'
+                    repsd.dataset.flag=true;
+                } else{
+                    repsd.style.border='1px solid red';
+                    repsd_warn.style.color='red'
+                    repsd_warn.innerHTML='密码不一致'
+                    repsd.dataset.flag='';
+                }
+            }
+            e_mail.onblur= function () {
+                var re=/[0-9a-zA-Z]+@[a-zA-Z]*\.[a-zA-Z]+/;
+                if(re.test(e_mail.value)){
+                    e_mail.style.border='1px solid green';
+                    e_mail_warn.style.color='green';
+                    e_mail_warn.innerHTML='邮箱格式正确'
+                    e_mail.dataset.flag=true;
+                }else{
+                    e_mail.style.border='1px solid red';
+                    e_mail_warn.style.color='red';
+                    e_mail_warn.innerHTML='邮箱格式错误'
+                    e_mail.dataset.flag='';
+                }
+            }
+            tel.onblur= function () {
+                var re=/^[0-9]{11}$/;
+                if(re.test(tel.value)){
+                    tel.style.border='1px solid green';
+                    tel_warn.style.color='green';
+                    tel_warn.innerHTML='手机格式正确'
+                    tel.dataset.flag=true;
+                }else{
+                    tel.style.border='1px solid red';
+                    tel_warn.style.color='red';
+                    tel_warn.innerHTML='手机格式错误'
+                    tel.dataset.flag='';
+                }
+            }
+            document.getElementsByTagName('button')[0].onclick= function () {
+
+                if(name.dataset.flag&&psd.dataset.flag&&repsd.dataset.flag&&e_mail.dataset.flag&&tel.dataset.flag){
+                    alert('提交成功')
+                }else{
+                    alert('提交失败')
+                }
+
+
+            }
+        }
+    </script>
+</head>
+<body>
+<div>
+    <span>名称</span>
+    <input type="text" id="name" data-flag='' />
+    <p id="name_warn">必填,输入4-16个字符</p>
+</div>
+<div>
+    <span>密码</span>
+    <input type="password" id="psd" data-flag='' />
+    <p id="psd_warn">必填,输入4-16个字符</p>
+</div>
+<div>
+    <span>确认密码</span>
+    <input type="password" id="repsd" data-flag='' />
+    <p id="repsd_warn">必填,输入4-16个字符</p>
+</div>
+<div>
+    <span>邮箱</span>
+    <input type="email" id="e_mail" data-flag='' />
+    <p id="e_mail_warn">必填,填写正确邮箱</p>
+</div>
+<div>
+    <span>手机</span>
+    <input type="text" id="tel" data-flag='' />
+    <p id="tel_warn">必填,填写正确手机</p>
+</div>
+<button>提交</button>
+</body>
+</html>

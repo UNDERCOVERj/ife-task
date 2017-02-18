@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        div{border:2px solid black;display: flex;flex-grow: 1;margin: 34px 24px;transition: background-color 500ms; }
+        #root{width: 80%;height: 300px}
+    </style>
+    <script>
+        window.onload= function () {
+            var val=document.getElementById('val');
+            var btn=document.getElementById('search');
+            var go=document.getElementById('go');
+            var root=document.getElementById('root');
+            var a=new Main();
+            a.EventUtil.addHandler(go,'click', function () {
+                a.firstSearch(root);
+                a.show();
+            });
+            a.EventUtil.addHandler(btn,'click', function () {
+                a.check(val.value);
+                if(a.index.length==0){
+                    alert('没有找到')
+                }else{
+                    a.show();
+                }
+            })
+        }
+        function Main(){
+            this.line=[];
+            this.index=[];
+            this.head=null;
+            this.timeId=null;
+            this.delay=500;
+            this.root=document.getElementById('root');
+        }
+        Main.prototype={
+            EventUtil:{
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent('on'+type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                }
+            },
+            reset: function () {
+               //如果队列非空即正在遍历
+                    for(var i=0;i<this.line.length;i++){
+                        this.line[i].style.backgroundColor='#fff';
+                    }//清除残留蓝色
+                    this.line = []; //清空队列
+                    this.index=[];
+                    clearTimeout(this.timeId); //清除定时器
+            },
+            check: function (str) {
+                this.reset();
+                this.firstSearch(this.root);//先遍历，往line中添加
+                for(var i=0;i<this.line.length;i++){
+                    if(this.line[i].innerHTML==str){
+                        this.index.push(this.line[i]);
+                    }
+                }
+            },
+            firstSearch: function(node){
+                this.reset();
+                var self=this;
+                (function sear(node){
+                    if(node){
+                        self.line.push(node);
+                        for(var i=0;i<node.children.length;i++){
+                                sear(node.children[i]);
+                        }
+                    }
+                })(node)
+             },
+           /* firstSearch: function (parent) {
+                this.reset();
+                var self=this;
+                (function inorder(parent) {
+                    if(parent!==null){
+                        self.line.push(parent);
+                        var child=parent.childNodes;
+                        for(var i=0;i<child.length;i++){
+                            if(child[i].nodeType==1){
+                                inorder(child[i]);
+                            }
+                        }
+                    }
+                })(parent);
+            },*/
+            show: function (target) {
+                var self=this;
+                var i=0;
+                function step(){
+                        if(i==0){
+                            self.line[i].style.backgroundColor='red';
+                        }else if(i< self.line.length){
+                            if(self.index.length!=0){
+                                for(var j=0;j<self.index.length;j++){
+                                    if(self.line[i-1]==self.index[j]){
+                                        self.line[i-1].style.backgroundColor='blue';
+                                    }else{
+                                        if(self.line[i-1].style.backgroundColor=='blue'){
+
+                                        }else{
+                                            self.line[i-1].style.backgroundColor='#fff';
+                                        }
+                                    }
+                                }
+                                self.line[i].style.backgroundColor='red';
+                            }else{
+                                self.line[i-1].style.backgroundColor='#fff';
+                                self.line[i].style.backgroundColor='red';
+                            }
+                        }else if(i==self.line.length){
+                            if(self.index.length!=0){
+                                for(var m=0;m<self.index.length;m++){
+                                    if(self.line[i-1]==self.index[m]){
+                                        self.line[i-1].style.backgroundColor='blue';
+                                    }else{
+                                        self.line[i-1].style.backgroundColor='#fff';
+                                    }
+                                }
+                            }else{
+                                self.line[i-1].style.backgroundColor='#fff';
+                            }
+                            clearTimeout(self.timeId);
+                        }
+                        i++;
+                        self.timeId=setTimeout(step,self.delay);
+
+                }
+                step();
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="root">
+    <div>
+        <div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+        </div>
+        <div>
+            <div>1</div>
+            <div>2</div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <div>1</div>
+            <div>5</div>
+        </div>
+        <div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+        </div>
+    </div>
+
+</div>
+<button id="go">遍历</button>
+<input type="text" id="val"/><button id="search">查询</button>
+</body>
+</html>

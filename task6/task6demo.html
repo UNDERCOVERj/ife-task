@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0;}
+        body{background: darkgrey;}
+        #container{margin: 0 auto;width: 980px;overflow:hidden;background: white;}
+        #head{width: 892px;height: 61px;position: relative;margin: 0 auto}
+        #head .slt{display: inline-block;padding-top:47px;font: 12px  黑体;color:#ffffff;background-color: #d45d5c; width: 110px}
+        #head .srt{color: #d45d5c;position:absolute;bottom:0;right:0;font: 12px  黑体;color:#d45d5c; }
+        #main{margin: 0 auto;width: 892px}
+        .first{margin-top: 30px;overflow:hidden;}
+        .trabecula{height: 2px;width: 892px;background:#938e8c }
+        .first .pic{width: 641px;height: 301px;position: relative;float: left}
+        .first .pic img{width: 641px;height: 301px;display: block;border: none}
+        .first .pic .green{width: 191px;height: 301px;z-index: 1;background: green;  opacity: 0.3;position: absolute;top:0;left: 0}
+        .first .pic .red{width: 191px;height: 301px;z-index: 1;background: red;  opacity: 0.3;position: absolute;top: 0;right: 0}
+        .first .about{width: 203px;float: right;}
+        .first .about_1{width: 203px;height: 2px;background: #cc8091}
+        .first .about_2{font: 24px 微软雅黑;color: #000000;}
+        .first .about_2 a{line-height: 40px}
+        .first .about_3{word-wrap:break-word;font: 12px 楷体;color: #676767;line-height: 10px}
+        .first .about_4{font:  116px 微软雅黑 ;color: #75b86b;}
+        .first .about_5{margin-top: -18px}
+        .first .about_6{font: 55px 微软雅黑;color: #cc8091;display: inline-block; }
+        .first .about_7{display: inline-block;}
+        .first .about_8{display: block;font:21px 微软雅黑;color: #cc8091;}
+        .first .about_9{display: block;font:12px 微软雅黑;color: #cc8091;}
+        .second{clear: both;}
+        .second .ul_1{list-style-type: none}
+        .second li{display: inline-block;}
+        .second .what{width: 240px;font:12px 微软雅黑;line-height: 16px;opacity: 0.7;margin-right: 30px;}
+        .second .what a{font: bold 16px 微软雅黑;color: #75b86b;padding-bottom: 5px;display: inline-block}
+        .second .when{width: 210px;font:12px 微软雅黑;line-height: 16px;opacity: 0.7;margin-right: 30px;vertical-align: top}
+        .second .when a{font: bold 16px 微软雅黑;color: #d2994f;padding-bottom: 5px;display: inline-block}
+        .second .how{vertical-align: top;font: 12px 微软雅黑;line-height: 16px;opacity: 0.7;}
+        .second .how a{font: bold 16px 微软雅黑;color: #cc7680;;padding-bottom: 5px;display: inline-block}
+        .second .how .how_3{font: italic 12px 微软雅黑;padding: 2px 0}
+        .second .how .how_2{color: #cd4a48}
+        .third{margin-top: 50px;overflow: hidden;padding-bottom: 20px}
+        .third .left{width: 415px;float: left;overflow: hidden}
+        .third .left .p_1{font:bold 42px 黑体;color: #11456b;line-height: 28px}
+        .third .left .p_1 span{font:bold italic 72px 黑体;color: #f5e327}
+        .third .left .p_2{font: bold 33px 黑体;color: #11456b;margin:16px auto}
+        .third .left .trabecula_2{width: 415px;height: 2px;background: #11456b;margin-bottom: 16px}
+        .third .left .div_1 span{font:70px 微软雅黑;color:#f5e327;float: left;line-height: 70px;padding: 0 16px 16px 0}
+        .third .left .div_1{font:12px 宋体;line-height: 16px;color: #767777}
+        .third .left .div_1 p{text-indent: 2em}
+        .third .left img{float: right;padding: 10px 0 10px 10px}
+        .third .right{width: 458px;float: left;position: relative;height: 275px;left: 10px}
+        .third .right .r_pic img{width: 458px;height: 275px;}
+        .third .right .r_pic .ab{position: absolute;bottom: 0;width: 458px;height: 61px;background-color:rgba(0,0,0,0.3)}
+        .third .right .ab div{height:44px;border-left: 3px solid #72b16a; margin-top: 9px;margin-left:50px;padding-left: 10px }
+        .third .ab .ab_span1{font: 26px 微软雅黑;color: white;line-height:44px}
+        .third .ab .ab_span2{font: italic 12px 微软雅黑;color: #72b16a;}
+        .last{background: #dfdfdf;width: 429px;height: 318px;padding-right: 30px;overflow: hidden;margin-top: 50px}
+        .last .cat{margin-top: 30px;margin-left: 30px;}
+        .last .cat p{margin-bottom: 20px;}
+        .last .cat span{display: inline-block}
+        .last .cat .cat_1{font: 16px 宋体;color: #5a5b5b;clear: both}
+        .last .cat .cat_2{float: right;font:italic 12px 宋体;color: #5a5b5b;line-height: 16px}
+        .last .cat0{width: 260px;height: 120px;padding: 20px 0;background: #cd4a48;float: left;overflow: hidden}
+        .last .cat0 .cat0_math{font: 110px 黑体;color: #FFFFFF;line-height: 120px;display: inline-block;margin-left: 5px}
+        .last .cat0 .cat_right{display: inline-block;height:120px;width:170px;padding-left:10px;border-left:2px solid white;vertical-align: top }
+        .last .cat_right .cat_p1,.cat_p2{font: italic 21px 黑体;line-height: 24px;color: white}
+        .last .cat_right .cat_p1{margin-top: 20px}
+        .last .cat_right .cat_p3{font:12px 黑体;color: white}
+        .last .cat1{float: right;width: 140px;height: 150px}
+        .last .cat1 .cite{font:72px 黑体;color: #d45d5c;line-height: 72px;float: left}
+        .last .cat1{font: italic 14px 黑体;}
+        .trabecula_3{height: 2px;width: 890px;background:#938e8c ;margin-top: 20px;clear: both}
+        .foot{width: 890px;height: 61px;position: relative;margin: 0 auto }
+        .foot span{color: #d45d5c;position:absolute;top:0;right:0;font: 12px  黑体;color:#d45d5c;}
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="head">
+        <span class="slt">ife.baidu.com</span>
+        <span class="srt">2016.03</span>
+    </div>
+    <div id="main">
+        <div class="trabecula"></div>
+            <div class="first">
+                <div class="pic">
+                    <img src="img/pic1.png" alt="pic1"/>
+                    <div class="green"></div>
+                    <div class="red"></div>
+                </div>
+                <div class="about">
+                    <div class="about_1"></div>
+                    <p class="about_2"><a href="#"> ABOUT</a></p>
+                    <p class="about_2"><a href="#">TECHNOLOGY</a> </p>
+                    <p class="about_3">About technology about technology about technology</p>
+                    <p class="about_4">700</p>
+                    <div class="about_5">
+                        <p class="about_6">3.2</p>
+                        <p class="about_7">
+                            <span class="about_8">css</span>
+                            <span class="about_9">csscsscsscss</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="second">
+                <ul class="ul_1">
+                    <li class="what">
+                        <a href="#">What</a>
+                        <p>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                        </p>
+                    </li>
+                    <li class="when">
+                        <a href="#">When</a>
+                        <p>
+"
+                            前端前端前端前端前端前端前端前端前端前
+                            端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前
+                            端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前
+                            端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前
+                            端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前
+                            端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端"
+
+
+                        </p>
+                    </li>
+                    <li class="how">
+                        <a href="#">How</a>
+                        <p>前端前端前端前端</p>
+                        <p>前端前端前端</p>
+                        <p > 前端</p>
+                        <p class="how_3"><span class="how_1">What--------</span><span class="how_2">40%</span> </p>
+                        <p class="how_3"><span class="how_1">What--------</span><span class="how_2">30%</span> </p>
+                        <p class="how_3"><span class="how_1">What--------</span><span class="how_2">30%</span> </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="third">
+                <div class="left">
+                    <p class="p_1">
+                        <span>THE</span>
+                        TECHNOLOGY OF FONT
+                    </p>
+                    <p class="p_2">前端技术领域</p>
+                    <div class="trabecula_2"></div>
+                    <div class="div_1">
+                        <span>前</span>端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                        前端前端前端前端前端前端前端前端
+                        <img src="img/pic3.png">
+                        前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                        <p>端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端</p>
+                        <p>端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前</p>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="r_pic">
+                        <img src="img/pic2.png" alt="a"/>
+                        <div class="ab">
+                            <div>
+                                <span class="ab_span1">前端技术</span>
+                                <span class="ab_span2">前端技术前端技术</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="last">
+                        <div class="cat">
+                            <p><img src="img/triangle.png"/> <span class="cat_1">前端前端前端前端前端前端 ................</span><span class="cat_2">前端</span></p>
+                            <p><img src="img/triangle.png"/> <span class="cat_1">前端前端前端前端前端前端 ................</span>.<span class="cat_2">前端</span></p>
+                            <p><img src="img/triangle.png"/> <span class="cat_1">前端前端前端前端前端前端 ................</span>.<span class="cat_2">前端</span></p>
+                        </div>
+                        <div class="cat0">
+                            <span class="cat0_math">0</span>
+                            <div class="cat_right">
+                                <p class="cat_p1">ONE TWO</p>
+                                <p class="cat_p2">THREE FORE FIVE</p>
+                                <p class="cat_p3">hello world hello world hello world</p>
+                            </div>
+                        </div>
+                        <div class="cat1">
+                            <span class="cite">“</span>hello world hello world hello world hello world hello world hello world hello world hello world<span class="cite">“</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="trabecula_3"></div>
+        <div class="foot">
+            <span>ife.baidu.com</span>
+        </div>
+
+
+    </div>
+</div>
+</body>
+</html>

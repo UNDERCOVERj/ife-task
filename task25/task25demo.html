@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0}
+        .top{height: 50px;}
+        .catogory{height: 20px;display: block;font-size: 20px;line-height: 20px;width: 300px}
+        .downArrow{border-top: 20px solid gray;border-right: 10px solid transparent;border-bottom: 0;border-left: 10px solid transparent;cursor: pointer}
+         .arrow{width: 0;height: 0;display: inline-block ; }
+        .rightArrow{border-top: 10px solid transparent;border-right: 0;border-bottom: 10px solid transparent;border-left: 20px solid grey;cursor: pointer}
+        .word{height: 20px;vertical-align: top;;cursor:pointer;}
+        .add,.delete{width: 20px;height: 20px;border: none;cursor: pointer;display: inline-block}
+        .intent{margin-left: 20px;}
+        .catogory:hover{background: #96e555}
+    </style>
+    <script>
+        window.onload= function () {
+            var a=new Main();
+        }
+        function Main(){
+
+            this.intent=document.getElementsByClassName('intent');
+            //this.setCss();
+            this.container=document.getElementById('container');
+            //this.clickEvent();
+            //this.setFlag();
+            this.setFlag(document.getElementById('first'));
+            this.setStart();
+
+            this.setClick();
+            this.line=[];
+        }
+        Main.prototype={
+            EventUtil:{
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent('on'+type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                },
+                getEvent: function (event) {
+                    return event?event:window.event;
+                },
+                getTarget: function (event) {
+                    return event.target?event.target:event.srcElement;
+                },
+            },
+           /* setFlag: function () {
+              for(var i=0;i<this.catogory.length;i++){
+                  var parent=this.catogory[i].parentNode;
+                  if(parent.children.length>1){
+                      for(var j=0;j<parent.children.length;j++){
+                          if(j!=0){
+                              parent.children[j].children[0].setAttribute('flag','off');
+                          }
+                      }
+                  }
+              }
+            },*/
+            clickEvent: function () {
+                var self = this;
+                this.EventUtil.addHandler(this.container, 'click', function (event) {
+                    var e = self.EventUtil.getEvent(event);
+                    var target = self.EventUtil.getTarget(e);
+                    if (target.className == 'catogory') {
+                        self.expand(target);
+                    }
+                });
+            },
+            expand: function (cat_node) {
+                if(cat_node.getAttribute('flag')=='on'){
+                    var parent=cat_node.parentNode;
+                    if(parent.children.length>1){
+                        for(var j=0;j<parent.children.length;j++){
+                            if(j!=0){
+                                parent.children[j].style.display='none';
+                            }
+                        }
+                        self.clickEventSetArrow(cat_node);
+                        cat_node.setAttribute('flag','off');
+                    }
+                }else if(cat_node.getAttribute('flag')=='off'){
+                    var node=cat_node.parentNode;
+                    if(node.children.length>1){
+                        for(var m=0;m<node.children.length;m++){
+                            if(m!=0){
+                                node.children[m].style.display='block';
+                            }
+                        }
+                        self.clickEventSetArrow(cat_node);
+                        cat_node.setAttribute('flag','on');
+                    }
+                }
+            },
+            clickEventSetArrow: function (node) {
+                if(node.getAttribute('flag')=='on'){
+                    node.children[0].className='arrow rightArrow';
+                }else if(node.getAttribute('flag')=='off'){
+                    node.children[0].className='arrow downArrow'
+                }
+            },
+            setFlag: function (node) {
+                (function search(node) {
+                    for(var i=0;i<node.children.length;i++){
+                        if(i==0){
+                            node.children[i].setAttribute('flag','off');
+                        }else{
+                            search(node.children[i]);
+                        }
+                    }
+                })(node);
+            },
+            setStart: function () {
+                var a=document.getElementsByClassName('catogory');
+                for(var i=0;i<a.length;i++){
+                    if(i==0){
+                        a[i].style.display='block'
+                    }else{
+                        if(a[i].getAttribute('flag')=='off'){
+                            a[i].style.display='none';
+                        }else{
+                            a[i].style.display='block';
+                        }
+                    }
+                }
+            },
+            setClick: function () {
+                var self=this;
+                this.EventUtil.addHandler(this.container,'click', function (event) {
+                    var e=self.EventUtil.getEvent(event);
+                    var target=self.EventUtil.getTarget(e);
+                    if(target.className=='catogory'){
+                        self.selectClick(target.parentNode);
+                    }else if(target.className=='add') {
+                        self.add(target.parentNode);
+                    }else if(target.className=='delete'){
+                        self.delete();
+                    }else{
+                        self.selectClick(target.parentNode.parentNode)
+                    }
+                })
+            },
+            add: function (p) {
+                var div=document.createElement('div');
+                div.className='one intent'
+                div.innertHTML='<div class="catogory" flag="off" style="display: block"> <div class="arrow downArrow"></div> <span class="word">cat</span> &nbsp; &nbsp; <img src="add.png" class="add"/> <img src="delete.png" class="delete"/> </div>';
+                p.parentNode.appendChild(div);
+                alert(p.parentNode.innerHTML)
+            },
+            selectClick: function (p) {
+                if(p.children.length>1){
+                    for(var i=0;i<p.children.length;i++){
+                        if(i!=0){
+                            if(p.children[0].getAttribute('flag')=='on'){
+                                p.children[i].firstElementChild.style.display='none';
+                            }else{
+                                p.children[i].firstElementChild.style.display='block';
+                            }
+                        }
+                    }
+                    if(p.children[0].getAttribute('flag')=='on'){
+                        p.children[0].setAttribute('flag','off');
+                    }else{
+                        p.children[0].setAttribute('flag','on');
+                    }
+                }else{
+                    p.firstElementChild.setAttribute('flag','off');
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<fieldset>
+    <legend>树形组件</legend>
+    <input type="text" id="txt"/>
+    <button id="search">查询</button>
+    <div class="top"></div>
+    <div id="container">
+        <div class="one">
+            <div class="one" id="first">
+                <div class="catogory" >
+                    <div class="arrow downArrow"></div>
+                    <span class="word">Animals</span>
+                    &nbsp; &nbsp;
+                    <img src="add.png" class="add"/>
+                    <img src="delete.png" class="delete"/>
+                </div>
+                <div class="one intent">
+                    <div class="catogory">
+                        <div class="arrow downArrow"></div>
+                        <span class="word">cat</span>
+                        &nbsp; &nbsp;
+                        <img src="add.png" class="add"/>
+                        <img src="delete.png" class="delete"/>
+                    </div>
+                </div>
+                <div class="one intent">
+                    <div class="catogory">
+                        <div class="arrow downArrow"></div>
+                        <span class="word">dog</span>
+                        &nbsp; &nbsp;
+                        <img src="add.png" class="add"/>
+                        <img src="delete.png" class="delete"/>
+                    </div>
+                    <div class="one intent">
+                        <div class="catogory">
+                            <div class="arrow downArrow"></div>
+                            <span class="word">dog</span>
+                            &nbsp; &nbsp;
+                            <img src="add.png" class="add"/>
+                            <img src="delete.png" class="delete"/>
+                        </div>
+                    </div>
+                    <div class="one intent">
+                        <div class="catogory">
+                            <div class="arrow downArrow"></div>
+                            <span class="word">dog</span>
+                            &nbsp; &nbsp;
+                            <img src="add.png" class="add"/>
+                            <img src="delete.png" class="delete"/>
+                        </div>
+                        <div class="one intent">
+                            <div class="catogory">
+                                <div class="arrow downArrow"></div>
+                                <span class="word">dog</span>
+                                &nbsp; &nbsp;
+                                <img src="add.png" class="add"/>
+                                <img src="delete.png" class="delete"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</fieldset>
+</body>
+</html>

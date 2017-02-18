@@ -1,0 +1,141 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 01</title>
+    <script>
+        /**
+         * aqiData，存储用户输入的空气指数数据
+         * 示例格式：
+         * aqiData = {
+ *    "北京": 90,
+ *    "上海": 40
+ * };
+         */
+                window.onload= function () {
+
+
+        var city=document.getElementById('aqi-city-input');
+        var val=document.getElementById('aqi-value-input');
+                    var value_error=document.getElementById('value_error');
+                    var city_error=document.getElementById('city_error');
+        var add=document.getElementById('add-btn');
+        var tab=document.getElementById('aqi-table');
+        var aqiData = {};
+        var str='<tr><td>城市</td><td>指数</td><td>操作</td></tr>';
+        /**
+         * 从用户输入中获取数据，向aqiData中增加一条数据
+         * 然后渲染aqi-list列表，增加新增的数据
+         */
+        function trim(str) {
+            return str.replace(/^(\s|\u00A0)+|(\s|\u00A0)+$/g, "");
+        }
+        function ifHasNumber(str) {
+            if (!trim(str)) {
+                city_error.innerHTML = "  城市输入为空，请输入一个城市！";
+                return false;
+            }
+            var pos = trim(str).search(/\d/);
+            if (pos >= 0) {
+                city_error.innerHTML = "  输入有误，请输入中文或者英文字母，不能包含数字！";
+                return false;
+            }
+            return true;
+        }
+        function ifHasLetter(str) {
+            if (!trim(str)) {
+                value_error.innerHTML = "  空气质量输入为空，请输入当前城市的天气质量！";
+                return false;
+            }
+            var pos = trim(str).search(/\D/);
+            if (pos >= 0) {
+                value_error.innerHTML = "  输入有误，请输入一个合法的正整数，不能包含中文、英文字母或者中间包含空格！";
+                return false;
+            }
+            return true;
+        }
+
+        function addAqiData() {
+            if(ifHasNumber(city.value)){
+                if(ifHasLetter(val.value)){
+                    aqiData[city.value]=parseInt(val.value);
+                }
+            }else{
+                ifHasLetter(val.value)
+            }
+        }
+
+        /**
+         * 渲染aqi-table表格
+         */
+        function renderAqiList() {
+            str='<tr><td>城市</td><td>指数</td><td>操作</td></tr>';
+            for(var key in aqiData){
+                str+='<tr><td>'+key+'</td><td>'+aqiData[key]+'</td><td><button>删除</button></td></tr>';
+            }
+            tab.innerHTML=str;
+        }
+
+        /**
+         * 点击add-btn时的处理逻辑
+         * 获取用户输入，更新数据，并进行页面呈现的更新
+         */
+        function addBtnHandle() {
+            addAqiData();
+            renderAqiList();
+        }
+
+        /**
+         * 点击各个删除按钮的时候的处理逻辑
+         * 获取哪个城市数据被删，删除数据，更新表格显示
+         */
+        function delBtnHandle(that) {
+            // do sth.
+            var x=that.parentNode.parentNode.childNodes[0].innerHTML;
+            delete aqiData[x];
+            renderAqiList();
+        }
+
+        function init() {
+
+            // 在这下面给add-btn绑定一个点击事件，点击时触发addBtnHandle函数
+            add.onclick=addBtnHandle;
+            // 想办法给aqi-table中的所有删除按钮绑定事件，触发delBtnHandle函数
+
+            tab.onclick= function (event) {
+
+                if(event.target.nodeName.toLowerCase()==='button'){
+                    delBtnHandle(event.target)
+                }
+            }
+
+        }
+
+        init();
+                }
+
+    </script>
+</head>
+<body>
+
+<div>
+    <label>城市名称：<input id="aqi-city-input" type="text"></label><span id="city_error"></span><br>
+    <label>空气质量指数：<input id="aqi-value-input" type="text"></label><span id="value_error"></span><br>
+    <button id="add-btn">确认添加</button>
+</div>
+<table id="aqi-table">
+    <!--
+      <tr>
+        <td>城市</td><td>空气质量</td><td>操作</td>
+      </tr>
+      <tr>
+        <td>北京</td><td>90</td><td><button>删除</button></td>
+      </tr>
+      <tr>
+        <td>北京</td><td>90</td><td><button>删除</button></td>
+      </tr>
+     -->
+</table>
+
+</body>
+</html>

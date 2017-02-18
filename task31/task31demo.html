@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0;font: bold 16px 微软雅黑}
+        #container{width: 600px;}
+        p{float: left;width: 50%;height: 100px;text-align: center;}
+        #in,#out,.top{height: 50px;line-height: 50px;display: inline-block;margin: 25px 10px}
+        .top{vertical-align: top}
+        .clear{clear: both;}
+        .school{width: 20%;padding-right: 20px;display: inline-block;text-align: right}
+        #first-select{width: 30%;display: inline-block}
+        #second-select{width: 40%;display: inline-block;margin-left: 20px}
+        #text_input{width: 70%}
+        #demo_2{display: none}
+    </style>
+    <script>
+
+        window.onload= function () {
+            var in_radio=document.getElementById('in');
+            var out_radio=document.getElementById('out');
+            var demo_1=document.getElementById('demo_1');
+            var demo_2=document.getElementById('demo_2');
+            var first=document.getElementById('first-select');
+            var second=document.getElementById('second-select');
+            var data=[['北京大学','清华大学'],['四川大学','电子科大'],['北京大学','清华大学'],['北京大学','清华大学','北大']];
+            function radioChange() {
+                if(in_radio.checked){
+                    demo_1.style.display='block'
+                    demo_2.style.display='none';
+                }else if(out_radio.checked){
+                    demo_2.style.display='block';
+                    demo_1.style.display='none'
+                }
+            }
+            function first_selectChange() {
+                var i=first.selectedIndex;
+                var sData=data[i];
+                second.innerHTML='';
+                console.log(second.innerHTML)
+                for(var j=0;j<sData.length;j++){
+                    var option=document.createElement('option');
+                    option.innerHTML=sData[j];
+                    second.appendChild(option)
+                }
+            }
+            first.onchange= first_selectChange;
+            in_radio.onchange= radioChange;
+            out_radio.onchange= radioChange;
+        }
+    </script>
+</head>
+<body>
+<div id="container">
+    <p><input type="radio" name="school" id="in" checked="checked" ><label class="top" for="in">在校生</label></p>
+    <p><input type="radio" name="school" id="out" ><label class="top" for="out">非在校生</label></p>
+    <div class="clear"></div>
+    <div>
+        <div id="demo_1">
+            <label class="school">学校</label>
+            <select id="first-select">
+                <option selected="selected">北京</option>
+                <option>成都</option>
+                <option>重庆</option>
+                <option>上海</option>
+            </select>
+            <select id="second-select">
+                <option selected="selected">北京大学</option>
+                <option>天津大学</option>
+            </select>
+        </div>
+        <div id="demo_2">
+            <label class="school">就业单位</label>
+            <input type="text" id="text_input" />
+        </div>
+    </div>
+</div>
+</body>
+</html>

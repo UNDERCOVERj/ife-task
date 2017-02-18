@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        div{border:2px solid black;display: flex;flex-grow: 1;margin: 34px 24px;transition: background-color 500ms;background-color: #fff; }
+        #root{width: 100%;height: 300px}
+    </style>
+    <script>
+        window.onload= function () {
+            var val=document.getElementById('val');
+            var btn=document.getElementById('search');
+            var dfs=document.getElementById('dfs');
+            var bfs=document.getElementById('bfs')
+            var root=document.getElementById('root');
+            var a=new Main();
+            a.EventUtil.addHandler(bfs,'click', function () {
+                a.traverseBf(root);
+                a.show();
+
+            });
+            a.EventUtil.addHandler(dfs,'click', function () {
+                a.traverseDf(root);
+                a.show();
+
+            });
+            a.EventUtil.addHandler(btn,'click', function () {
+                a.check(val.value);
+                if(a.index.length==0){
+                    alert('没有找到')
+                }else{
+                    a.show();
+                }
+            })
+        }
+        function Main(){
+            this.line=[];
+            this.selectFlag=null;
+            this.index=[];
+            this.head=null;
+            this.timeId=null;
+            this.addText=document.getElementById('addText');
+            this.addChild=document.getElementById('add');
+            this.delay=500;
+            this.removeBtn=document.getElementById('remove');
+            this.root=document.getElementById('root');
+            this.all=this.root.getElementsByTagName('div');
+            this.select();
+            this.remove();
+            this.add();
+        }
+        Main.prototype={
+            EventUtil:{
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent('on'+type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                },
+                getEvent: function (event) {
+                    return event?event:window.event;
+                },
+                getTarget: function (event) {
+                    return event.target?event.target:event.srcElement;
+                },
+            },
+            //remove后需再调用
+            select: function () {
+                var self=this;
+                for(var i=0;i<this.all.length;i++){
+                    this.EventUtil.addHandler(this.root,'click', function (i,event) {
+                        return function (event) {
+                            var e=self.EventUtil.getEvent(event);
+                            if(self.all[i]==self.EventUtil.getTarget(e)){
+                                if(self.selectFlag){
+                                    self.selectFlag.style.backgroundColor='#fff';
+                                }
+                                self.selectFlag=self.EventUtil.getTarget(e);
+                                self.selectFlag.style.backgroundColor='yellow';
+                            }
+                        }
+                    }(i))
+                }
+            },
+            remove: function () {
+                var self=this;
+                this.EventUtil.addHandler(this.removeBtn,'click', function () {
+                    if(self.selectFlag){
+                        self.selectFlag.parentNode.removeChild(self.selectFlag);
+                        self.all=self.root.getElementsByTagName('div');
+                    }else{
+                        alert('请选中要删除的节点');
+                    }
+                })
+            },
+            add: function () {
+                var self=this;
+                this.EventUtil.addHandler(this.addChild,'click', function () {
+                    var addText=self.addText.value;
+                    if(self.selectFlag){
+                        if(addText!=null){
+                            var str=document.createElement('div');
+                            var txt=document.createTextNode(addText);
+                            str.appendChild(txt);
+                            self.selectFlag.appendChild(str);
+                            self.all=self.root.getElementsByTagName('div');
+                        }else{
+                            alert('请输入要查人的节点内容');
+                        }
+                    }
+                })
+            },
+            reset: function () {
+                this.selectFlag=null;
+                //如果队列非空即正在遍历
+                for(var i=0;i<this.line.length;i++){
+                    this.line[i].style.backgroundColor='#fff';
+                }//清除残留蓝色
+                this.line = []; //清空队列
+                this.index=[];
+                clearTimeout(this.timeId); //清除定时器
+            },
+            check: function (str) {
+                this.reset();
+                this.traverseDf(this.root);//先遍历，往line中添加
+                for(var i=0;i<this.line.length;i++){
+                    if(this.line[i].innerHTML==str){
+                        this.index.push(this.line[i]);
+                    }
+                }
+            },
+
+            traverseDf: function(node){
+                this.reset();
+                var self=this;
+                (function sear(node){
+                    if(node){
+                        self.line.push(node);
+                        for(var i=0;i<node.children.length;i++){
+                            sear(node.children[i]);
+                        }
+                    }
+                })(node)
+            },
+            //广度优先遍历
+            traverseBf: function (node) {
+                this.reset();
+                var self=this;
+                (function  sear(node) {
+                    var queue=[];
+                    queue.push(node);
+                    var p=null;
+                    while(queue.length!=0){
+                        p=queue.shift();
+                        self.line.push(p);
+                        for(var i=0;i<p.children.length;i++){
+                            queue.push(p.children[i]);
+                        }
+                    }
+                })(node)
+
+            },
+            /* firstSearch: function (parent) {
+             this.reset();
+             var self=this;
+             (function inorder(parent) {
+             if(parent!==null){
+             self.line.push(parent);
+             var child=parent.childNodes;
+             for(var i=0;i<child.length;i++){
+             if(child[i].nodeType==1){
+             inorder(child[i]);
+             }
+             }
+             }
+             })(parent);
+             },*/
+            show: function (target) {
+                var self=this;
+                var i=0;
+                function step(){
+                    if(i==0){
+                        self.line[i].style.backgroundColor='red';
+                    }else if(i< self.line.length){
+                        if(self.index.length!=0){
+                            for(var j=0;j<self.index.length;j++){
+                                if(self.line[i-1]==self.index[j]){
+                                    self.line[i-1].style.backgroundColor='blue';
+                                }else{
+                                    if(self.line[i-1].style.backgroundColor=='blue'){
+
+                                    }else{
+                                        self.line[i-1].style.backgroundColor='#fff';
+                                    }
+                                }
+                            }
+                            self.line[i].style.backgroundColor='red';
+                        }else{
+                            self.line[i-1].style.backgroundColor='#fff';
+                            self.line[i].style.backgroundColor='red';
+                        }
+                    }else if(i==self.line.length){
+                        if(self.index.length!=0){
+                            for(var m=0;m<self.index.length;m++){
+                                if(self.line[i-1]==self.index[m]){
+                                    self.line[i-1].style.backgroundColor='blue';
+                                }else{
+                                    self.line[i-1].style.backgroundColor='#fff';
+                                }
+                            }
+                        }else{
+                            self.line[i-1].style.backgroundColor='#fff';
+                        }
+                        clearTimeout(self.timeId);
+                    }
+                    i++;
+                    self.timeId=setTimeout(step,self.delay);
+
+                }
+                step();
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="root">
+    <div>
+        <div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+        </div>
+        <div>
+            <div>1</div>
+            <div>2</div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <div>1</div>
+            <div>5</div>
+        </div>
+        <div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+        </div>
+    </div>
+
+</div>
+<button id="dfs">深度遍历</button>
+<button id="bfs">广度遍历</button>
+<input type="text" id="val"/><button id="search">查询</button>
+<button id="remove">删除</button>
+<input type="text" id="addText"/>
+<button id="add">添加节点</button>
+</body>
+</html>

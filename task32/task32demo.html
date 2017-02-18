@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0}
+        body{width: 100%}
+        #left{width: 400px;overflow: hidden;text-align: center;float: left;}
+        #type p,#device p,#rule p,#selOptions p{display: inline-block;margin-left: 10px;margin-top: 20px}
+        fieldset{width: 90%;height: 100px;text-align: center;margin-top: 30px}
+        button{width: 20%;height: 30px;border: none;border-radius: 10px;background: #0099ff;cursor: pointer;margin-top: 10px}
+        #right{margin-left: 450px;margin-right:100px;padding: 30px 0;text-align: center;border: 2px solid #0099ff;border-radius: 10px}
+        #right p{color: #0099ff;font: 32px 微软雅黑}
+    </style>
+    <script>
+        window.onload= function () {
+            new Base();
+        }
+        function Base(){
+            this.data={
+                label:'',
+                type:'',
+                validator: '长度为4-16个字符',
+                rules:'',
+                success:'',
+                fail:'',
+                valiType:''
+            };
+            this.ip=document.getElementById('ip');
+            this.rule=document.getElementById('rule');
+            this.selOptions=document.getElementById('selOptions');
+            this.types=document.getElementById('type');
+            this.radio_p=this.types.getElementsByTagName('input');
+            this.rule_p=this.rule.getElementsByTagName('input');
+            this.device_text=document.getElementById('device_text');
+            this.right=document.getElementById('right');
+            this.sel_input=document.getElementById('sel_input');
+            this.triggle(this.radio_p);
+            this.setLabel();
+            this.setRules(this.rule_p);
+            this.EventUtil.addHandler(this.right,'click',this.addWhat)
+        }
+        Base.prototype={
+            EventUtil:{
+                addHandler: function (element,type,fn) {
+                    if(addEventListener){
+                        element.addEventListener(type,fn,false);
+                    }else if(attachEvent){
+                        element.attachEvent('on'+type,fn);
+                    }else{
+                        element['on'+type]=fn;
+                    }
+                },
+                getEvent: function (event) {
+                    return event?event:window.event;
+                },
+                getTarget: function (event) {
+                    return event.target?event.target:event.srcElement;
+                }
+            },
+            set: function (node) {
+                //配置里的值需要改变
+                //设置可见
+                if(node.id==='text'){
+                    this.rule.style.display='block';
+                    this.selOptions.style.display='none';
+                }else{
+                    this.rule.style.display='none';
+                    this.selOptions.style.display='block';
+                }
+                this.device_text.value=node.value;
+                this.data.type=node.id;//设置data
+            },
+            //触发输入类型的点击事件
+            triggle: function (node_arr) {
+                var self=this;
+                console.log('begin')
+                for(var i=0;i<node_arr.length;i++){
+                    this.EventUtil.addHandler(node_arr[i],'click', function (i) {
+                        var _this=self
+                        return function () {
+                            _this.set(node_arr[i])
+                        }
+                    }(i))
+                }
+            },
+            setLabel: function () {
+                var self=this;
+                this.EventUtil.addHandler(this.device_text,'change', function () {
+                    self.data.label=self.device_text.value;
+                })
+            },
+            setRules: function (node_arr) {
+                var self=this;
+                for(var i=0;i<node_arr.length;i++){
+                    this.EventUtil.addHandler(node_arr[i],'click', function (i) {
+                        var _this=self;
+                       return function () {
+                           console.log(i);
+                           _this.data.valiType=node_arr[i].value;
+                           console.log(_this.data)
+                       }
+                    }(i))
+                }
+            },
+            addWhat: function () {
+                if(!this.data.label){
+                    alert('请输入');
+                }else{
+                    var str='';
+                    switch (this.data.type){
+                        case 'text':
+                            str='<div class="add_div"><label class="add_label">'+this.data.label+'</label><input class="add_input" type='+this.data.type+'/><p class="add_p">'+this.data.validator+'</p></div>'
+                            break;
+                        case 'radio':
+                        case 'checkbox':
+                            str=this.getStr();
+
+                    }
+                    this.right.innerHTML+=str;
+                }
+            },
+            getStr: function () {
+
+            }
+
+
+        }
+    </script>
+</head>
+<body>
+<div id="left">
+    <fieldset id="type">
+        <legend>类型</legend>
+        <p><input type="radio" name="only_one" value="输入框" id="text" checked="checked"><label for="text">输入框</label></p>
+        <p><input type="radio" name="only_one" value="单选框" id="radio"><label for="radio">单选框</label></p>
+        <p><input type="radio" name="only_one" value="多选框" id="checkbox"><label for="checkbox">多选框</label></p>
+        <p><input type="radio" name="only_one" value="下拉框" id="select"><label for="select">下拉框</label></p>
+    </fieldset>
+    <fieldset id="device">
+        <legend>配置</legend>
+        <p><label>名称</label><input type="text" id="device_text" value="输入框"/></p>
+    </fieldset>
+    <fieldset id="rule">
+        <legend>规则</legend>
+        <p><input type="radio" name="only_s_one" value="text" id="word"><label for="word">文字</label></p>
+        <p><input type="radio" name="only_s_one" value="number" id="number"><label for="number">数字</label></p>
+        <p><input type="radio" name="only_s_one" value="email" id="email"><label for="email">邮箱</label></p>
+        <p><input type="radio" name="only_s_one"  value="tel" id="tel"><label for="tel">电话号码</label></p>
+        <p><input type="radio" name="only_s_one" value="password" id="password"><label for="password">密码</label></p>
+    </fieldset>
+    <fieldset id="selOptions" style="display: none">
+        <legend>选项</legend>
+        <input type="text" placeholder="可用空格,回车，逗号来分隔选项" id="sel_input"/>
+    </fieldset>
+
+    <button id="add">add</button>
+</div>
+<div id="right">
+    <p>表单展示区</p>
+</div>
+</body>
+</html>
